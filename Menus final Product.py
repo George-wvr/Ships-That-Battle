@@ -244,6 +244,10 @@ while True:
         displaysurf.blit(gamename_txt_title, text_rect)
 
         #Name input
+        #Creating title for the box:
+        gamename_txt_title =current_standard_fnt.render("Name",True, current_text_col)
+        text_rect = gamename_txt_title.get_rect(center = (swidth/2, 120))
+        displaysurf.blit(gamename_txt_title, text_rect)
         #Creates the background box for the input
         name_surf = pygame.Surface((swidth-40, 80))
         name_rect = name_surf.get_rect(topleft=(swidth-(swidth-20), 175))
@@ -254,25 +258,30 @@ while True:
             name_surf.fill(screen_alt)
         else:
             name_surf.fill(screen_default)
-        displaysurf.blit(name_surf, (swidth-(swidth-20), 175))
+        displaysurf.blit(name_surf, (swidth-(swidth-20), 150))
 
         #Creates a new surface ontop where the content will be written to
         name_text = pygame.Surface((swidth-80, 60))
         name_text.fill(current_screen_col)
-        displaysurf.blit(name_text, (swidth-(swidth-40), 185))
+        displaysurf.blit(name_text, (swidth-(swidth-40), 160))
 
         #Writes the text entered to the box, in the middle
         text =current_standard_fnt.render(user_name_text,True, current_text_col)
-        text_rect = text.get_rect(center = (swidth/2, 215))
+        text_rect = text.get_rect(center = (swidth/2, 190))
         displaysurf.blit(text, text_rect)
 
         #Writes the information abt validation below the box
         text =current_standard_fnt.render(n_message,True, txt_error_col)
-        text_rect = text.get_rect(center = (swidth/2, 300))
+        text_rect = text.get_rect(center = (swidth/2, 270))
         displaysurf.blit(text, text_rect)
 
         #Age input
         #works in same way to name box
+        #Creating title for the box:
+        text =current_standard_fnt.render("Age",True, current_text_col)
+        text_rect = text.get_rect(center = (swidth/2, 330))
+        displaysurf.blit(text, text_rect)
+
         age_surf = pygame.Surface((swidth-40, 80))
         age_rect = age_surf.get_rect(topleft=(swidth-(swidth-40), 385))
         if active_box == "age":
@@ -339,6 +348,7 @@ while True:
             play_game = submit_validate(user_name_text, user_age_input)
             if play_game == True:
                 print("Load Game") # To do
+                menu = "game"
             else: # Used to test if the button works correctly
                 print("Validation not met")
                 
