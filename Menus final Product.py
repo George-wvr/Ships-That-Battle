@@ -244,6 +244,10 @@ while True:
         displaysurf.blit(gamename_txt_title, text_rect)
 
         #Name input
+        #Creating title for the box:
+        gamename_txt_title =current_standard_fnt.render("Name",True, current_text_col)
+        text_rect = gamename_txt_title.get_rect(center = (swidth/2, 120))
+        displaysurf.blit(gamename_txt_title, text_rect)
         #Creates the background box for the input
         name_surf = pygame.Surface((swidth-40, 80))
         name_rect = name_surf.get_rect(topleft=(swidth-(swidth-20), 175))
@@ -254,25 +258,30 @@ while True:
             name_surf.fill(screen_alt)
         else:
             name_surf.fill(screen_default)
-        displaysurf.blit(name_surf, (swidth-(swidth-20), 175))
+        displaysurf.blit(name_surf, (swidth-(swidth-20), 150))
 
         #Creates a new surface ontop where the content will be written to
         name_text = pygame.Surface((swidth-80, 60))
         name_text.fill(current_screen_col)
-        displaysurf.blit(name_text, (swidth-(swidth-40), 185))
+        displaysurf.blit(name_text, (swidth-(swidth-40), 160))
 
         #Writes the text entered to the box, in the middle
         text =current_standard_fnt.render(user_name_text,True, current_text_col)
-        text_rect = text.get_rect(center = (swidth/2, 215))
+        text_rect = text.get_rect(center = (swidth/2, 190))
         displaysurf.blit(text, text_rect)
 
         #Writes the information abt validation below the box
         text =current_standard_fnt.render(n_message,True, txt_error_col)
-        text_rect = text.get_rect(center = (swidth/2, 300))
+        text_rect = text.get_rect(center = (swidth/2, 270))
         displaysurf.blit(text, text_rect)
 
         #Age input
         #works in same way to name box
+        #Creating title for the box:
+        text =current_standard_fnt.render("Age",True, current_text_col)
+        text_rect = text.get_rect(center = (swidth/2, 330))
+        displaysurf.blit(text, text_rect)
+
         age_surf = pygame.Surface((swidth-40, 80))
         age_rect = age_surf.get_rect(topleft=(swidth-(swidth-40), 385))
         if active_box == "age":
@@ -339,6 +348,7 @@ while True:
             play_game = submit_validate(user_name_text, user_age_input)
             if play_game == True:
                 print("Load Game") # To do
+                menu = "game"
             else: # Used to test if the button works correctly
                 print("Validation not met")
                 
@@ -347,10 +357,40 @@ while True:
         text_rect = gamename_txt_title.get_rect(center = (swidth/2, 30))
         displaysurf.blit(text, text_rect)
 
-        text =current_title_fnt.render("How to play:",True, current_text_col)
-        text_rect = text.get_rect(center = (swidth/2, 125))
+        text =current_standard_fnt.render("How to play:",True, current_text_col)
+        text_rect = text.get_rect(center = (swidth/2, 100))
         displaysurf.blit(text, text_rect)
+        
+        #rendering a backing box for the text. 
+        #Two are needed as it will highlight the text but keep it the same as the default background for easy reading
+        box = pygame.Surface((1200,475))
+        #if statement to determin the alternat colour of the big box depending on the background
+        if current_screen_col == screen_default:
+            box.fill(screen_alt)
+        elif current_screen_col == screen_alt:
+            box.fill(screen_default) 
+        displaysurf.blit(box, (25, 125))
 
+        #Adding a new box over the top of the selected background colour
+        box = pygame.Surface((1150, 425))
+        box.fill(current_screen_col)
+        displaysurf.blit(box, (50, 150))
+
+        #Opening a file that will contain the instructions on how to play
+        #this will be displayed on the screen after beign read
+        file = open("How to play.txt","r") # read only mode
+        #has to be read one line at a time to get it on different lines        
+
+        #Starting position - to be incromented each line:
+        yposition = 160
+        #renderign the text
+        for eachline in file:
+            eachline = eachline[:-1] #Removes the carrige return at the end of each line from the render
+            text = current_standard_fnt.render(eachline, True, current_text_col)
+            displaysurf.blit(text, (55, yposition))
+            yposition += 35
+
+        #Buttons
         for button in how_play_buttons:
             button.draw()
             #checks if the mouse is over the button
