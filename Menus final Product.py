@@ -360,6 +360,13 @@ while True:
         text =current_title_fnt.render("How to play:",True, current_text_col)
         text_rect = text.get_rect(center = (swidth/2, 125))
         displaysurf.blit(text, text_rect)
+        
+        #rendering a backing box for the text. 
+        #Two are needed as it will highlight the text but keep it the same as the default background for easy reading
+
+        box = pygame.surface(switch-50,sheight-150)
+box.fill(current_screen_colour)
+displaysurf.blit(box, (25, 100)
 
         for button in how_play_buttons:
             button.draw()
