@@ -379,12 +379,16 @@ while True:
         #Opening a file that will contain the instructions on how to play
         #this will be displayed on the screen after beign read
         file = open("How to play.txt","r") # read only mode
-        file_text = file.read()
-        file.close()
+        #has to be read one line at a time to get it on different lines        
 
+        #Starting position - to be incromented each line:
+        yposition = 160
         #renderign the text
-        text = current_standard_fnt.render(file_text, True, current_text_col)
-        displaysurf.blit(text, (75, 175))
+        for eachline in file:
+            eachline = eachline[:-1] #Removes the carrige return at the end of each line from the render
+            text = current_standard_fnt.render(eachline, True, current_text_col)
+            displaysurf.blit(text, (55, yposition))
+            yposition += 35
 
         #Buttons
         for button in how_play_buttons:
