@@ -372,6 +372,13 @@ while True:
         displaysurf.blit(box, (25, 150))
 
         #Adding a new box over the top of the selected background colour
+        box = pygame.Surface((1150, 375))
+        box.fill(current_screen_col)
+        displaysurf.blit(box, (50, 175))
+
+        file = open("How to play.txt","r")
+        text = file.read()
+        print(text)
 
         #Buttons
         for button in how_play_buttons:
