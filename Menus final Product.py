@@ -429,12 +429,26 @@ while True:
         box = pygame.Surface((1000,350))
         box_rect = box.get_rect(center = (swidth/2,sheight/2))
         #Draws an empty box with a border to display the text in later
+        #format: surface to draw on, colour, rect, border width, corner rounding
         pygame.draw.rect(displaysurf, current_text_col, box_rect, 5, 10)
 
+        #file handeling and rendering text for the highscore
+        filetext = "High Score: "
+        file = open("high score.txt","r")
+        filetext += file.readline()
+        text = current_standard_fnt.render(filetext, True, current_text_col)
+        text_rect = text.get_rect(topright = (1115, 535))
+
         #Background box for High score
-        box = pygame.Surface((400,75))
-        box_rect = box.get_rect(topleft = (725, 500)) 
+        #setup after text so that it is adaptable to the size of the text within
+        x, y = text_rect.topright # assigsn the two coords of the topright to the values x and y respectivly
+        a, b = text_rect.topleft # same with topleft
+        box = pygame.Surface((((x-a)+20),75))
+        box_rect = box.get_rect(topright = (x+10, y-20))
         pygame.draw.rect(displaysurf, current_text_col, box_rect, 5, 10)
+
+        #Displaying the text after the box
+        displaysurf.blit(text, text_rect)        
 
     if menu == "quit":
         gamename_txt_title =current_title_fnt.render("Ships That Battle",True, current_text_col)
