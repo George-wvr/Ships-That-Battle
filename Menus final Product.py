@@ -357,17 +357,23 @@ while True:
         text_rect = gamename_txt_title.get_rect(center = (swidth/2, 30))
         displaysurf.blit(text, text_rect)
 
-        text =current_title_fnt.render("How to play:",True, current_text_col)
+        text =current_standard_fnt.render("How to play:",True, current_text_col)
         text_rect = text.get_rect(center = (swidth/2, 125))
         displaysurf.blit(text, text_rect)
         
         #rendering a backing box for the text. 
         #Two are needed as it will highlight the text but keep it the same as the default background for easy reading
+        box = pygame.Surface((1200,425))
+        #if statement to determin the alternat colour of the big box depending on the background
+        if current_screen_col == screen_default:
+            box.fill(screen_alt)
+        elif current_screen_col == screen_alt:
+            box.fill(screen_default) 
+        displaysurf.blit(box, (25, 150))
 
-        box = pygame.surface(switch-50,sheight-150)
-box.fill(current_screen_colour)
-displaysurf.blit(box, (25, 100)
+        #Adding a new box over the top of the selected background colour
 
+        #Buttons
         for button in how_play_buttons:
             button.draw()
             #checks if the mouse is over the button
