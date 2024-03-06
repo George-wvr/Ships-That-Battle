@@ -358,27 +358,33 @@ while True:
         displaysurf.blit(text, text_rect)
 
         text =current_standard_fnt.render("How to play:",True, current_text_col)
-        text_rect = text.get_rect(center = (swidth/2, 125))
+        text_rect = text.get_rect(center = (swidth/2, 100))
         displaysurf.blit(text, text_rect)
         
         #rendering a backing box for the text. 
         #Two are needed as it will highlight the text but keep it the same as the default background for easy reading
-        box = pygame.Surface((1200,425))
+        box = pygame.Surface((1200,475))
         #if statement to determin the alternat colour of the big box depending on the background
         if current_screen_col == screen_default:
             box.fill(screen_alt)
         elif current_screen_col == screen_alt:
             box.fill(screen_default) 
-        displaysurf.blit(box, (25, 150))
+        displaysurf.blit(box, (25, 125))
 
         #Adding a new box over the top of the selected background colour
-        box = pygame.Surface((1150, 375))
+        box = pygame.Surface((1150, 425))
         box.fill(current_screen_col)
-        displaysurf.blit(box, (50, 175))
+        displaysurf.blit(box, (50, 150))
 
-        file = open("How to play.txt","r")
-        text = file.read()
-        print(text)
+        #Opening a file that will contain the instructions on how to play
+        #this will be displayed on the screen after beign read
+        file = open("How to play.txt","r") # read only mode
+        file_text = file.read()
+        file.close()
+
+        #renderign the text
+        text = current_standard_fnt.render(file_text, True, current_text_col)
+        displaysurf.blit(text, (75, 175))
 
         #Buttons
         for button in how_play_buttons:

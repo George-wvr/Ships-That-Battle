@@ -1,1 +1,4 @@
-Control the ship using W, A, S and D
+You have 2 minutes to try and get the highest score you can\n
+Control your ship using the W, A, S and D keys.
+You can aim the missiles by using the mouse - they will travel in the direction of the mouse
+Fire missiles by right-cliciking the mouse.
