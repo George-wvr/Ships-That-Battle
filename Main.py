@@ -350,10 +350,8 @@ while True:
         if submit == True:
             play_game = submit_validate(user_name_text, user_age_input)
             if play_game == True:
-                print("Load Game") # To do
+                # To do
                 menu = "game"
-            else: # Used to test if the button works correctly
-                print("Validation not met")
                 
     if menu == "how_play":
         text =current_title_fnt.render("Ships That Battle",True, current_text_col)
@@ -506,6 +504,9 @@ while True:
     if menu == "leave_game":
         pygame.quit()
         sys.exit()
+
+    if menu == "game":
+        print("Load")
 
     pygame.display.flip()
     pygame.display.update()
