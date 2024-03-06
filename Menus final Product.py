@@ -436,6 +436,7 @@ while True:
         filetext = "High Score: "
         file = open("high score.txt","r")
         filetext += file.readline()
+        file.close()
         text = current_standard_fnt.render(filetext, True, current_text_col)
         text_rect = text.get_rect(topright = (1115, 535))
 
@@ -448,7 +449,40 @@ while True:
         pygame.draw.rect(displaysurf, current_text_col, box_rect, 5, 10)
 
         #Displaying the text after the box
-        displaysurf.blit(text, text_rect)        
+        displaysurf.blit(text, text_rect)     
+
+        #All scores:
+        #middle of each column is 375 and 875
+        column_no = 1
+        line_no = 1
+        yposition = 160
+        file = open("all scores.txt","r")
+        for line in file:
+            filetext = line
+            filetext = filetext[:-1] #to remove return at the end of the line
+            text = current_standard_fnt.render(filetext, True, current_text_col)
+            if column_no == 1:
+                middle = 375
+                text_rect = text.get_rect(center = (middle,yposition))
+                if line_no <= 8:
+                    line_no += 1
+                    yposition += 40
+                elif line_no > 8:
+                    line_no = 1
+                    column_no = 2
+                    yposition = 160
+            if column_no == 2:
+                middle = 875
+                text_rect = text.get_rect(center = (middle,yposition))
+                if line_no <= 8:
+                    line_no += 1
+                    yposition += 40
+                elif line_no > 8:
+                    line_no = 1
+                    column_no = 3
+            
+            if column_no == 1 or column_no == 2:
+                displaysurf.blit(text,text_rect)
 
     if menu == "quit":
         gamename_txt_title =current_title_fnt.render("Ships That Battle",True, current_text_col)
