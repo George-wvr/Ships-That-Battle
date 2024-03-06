@@ -185,7 +185,7 @@ home_btn = Button(10, 10, 200, 50, 0, 0, "Home", 0, "start")
 #Start Menu
 start_btn = Button(50, 200, 200, 50, 0, 0, "Start Game", 0, "validation")
 how_play_btn = Button(50, 250, 200, 50, 0, 0, "How to play", 0, "how_play")
-h_score_btn = Button(50, 300, 200, 50, 0, 0, "Highscores", 0, "start")
+h_score_btn = Button(50, 300, 200, 50, 0, 0, "Highscores", 0, "scores")
 settings_btn = Button(50, 350, 200, 50, 0, 0, "Settings", 0, "start")
 quit_game_btn = Button(50, 400, 200, 50, 0, 0, "Quit game", 0, "quit")
 colour1_btn = Button(1000, 200, 155, 50, 1, 0, "Colour 1", 1, "col1")
@@ -195,11 +195,14 @@ font2_btn = Button(1000, 425, 155, 50, 0, 2, " Font 2", 1, "fnt2")
 start_buttons = [start_btn, how_play_btn, h_score_btn, settings_btn, quit_game_btn, colour1_btn, colour2_btn, font1_btn, font2_btn]
 
 #Validation page
-submit_btn = Button(575, 550, 200, 50, 0, 0, "Submit", 2, "validate")
+submit_btn = Button(575, 550, 200, 50, 0, 0, "Start Game", 2, "validate")
 validation_buttons = [home_btn, submit_btn]
 
 #How to play page
 how_play_buttons = [home_btn]
+
+#Score page
+score_buttons = [home_btn]
 
 #quitpage
 yes_btn = Button(400, 275, 200, 50, 0, 0, "Yes", 0, "leave_game")
@@ -401,6 +404,86 @@ while True:
                         menu = button.action
                     elif button.type == 1:
                         scheme_change(button.action)
+
+    if menu == "scores":
+        text = current_title_fnt.render("Ships That Battle", True, current_text_col)
+        text_rect = text.get_rect(center = (swidth/2, 30))
+        displaysurf.blit(text, text_rect)
+
+        #Buttons
+        for button in score_buttons:
+            button.draw()
+            #checks if the mouse is over the button
+            if button.hover() == True:
+                #checks if the button has been clicked on
+                if button.clicked() == True:
+                    if button.type == 0:
+                        menu = button.action
+
+        #Page title:
+        text = current_standard_fnt.render("High Scores", True, current_text_col)
+        text_rect = text.get_rect(center=(swidth/2, 80))
+        displaysurf.blit(text, text_rect)
+
+        #box for all scores
+        box = pygame.Surface((1000,350))
+        box_rect = box.get_rect(center = (swidth/2,sheight/2))
+        #Draws an empty box with a border to display the text in later
+        #format: surface to draw on, colour, rect, border width, corner rounding
+        pygame.draw.rect(displaysurf, current_text_col, box_rect, 5, 10)
+
+        #file handeling and rendering text for the highscore
+        filetext = "High Score: "
+        file = open("high score.txt","r")
+        filetext += file.readline()
+        file.close()
+        text = current_standard_fnt.render(filetext, True, current_text_col)
+        text_rect = text.get_rect(topright = (1115, 535))
+
+        #Background box for High score
+        #setup after text so that it is adaptable to the size of the text within
+        x, y = text_rect.topright # assigsn the two coords of the topright to the values x and y respectivly
+        a, b = text_rect.topleft # same with topleft
+        box = pygame.Surface((((x-a)+20),75))
+        box_rect = box.get_rect(topright = (x+10, y-20))
+        pygame.draw.rect(displaysurf, current_text_col, box_rect, 5, 10)
+
+        #Displaying the text after the box
+        displaysurf.blit(text, text_rect)     
+
+        #All scores:
+        #middle of each column is 375 and 875
+        column_no = 1
+        line_no = 1
+        yposition = 160
+        file = open("all scores.txt","r")
+        for line in file:
+            filetext = line
+            filetext = filetext[:-1] #to remove return at the end of the line
+            text = current_standard_fnt.render(filetext, True, current_text_col)
+            if column_no == 1:
+                middle = 375
+                text_rect = text.get_rect(center = (middle,yposition))
+                if line_no <= 8:
+                    line_no += 1
+                    yposition += 40
+                elif line_no > 8:
+                    line_no = 1
+                    column_no = 2
+                    yposition = 160
+            if column_no == 2:
+                middle = 875
+                text_rect = text.get_rect(center = (middle,yposition))
+                if line_no <= 8:
+                    line_no += 1
+                    yposition += 40
+                elif line_no > 8:
+                    line_no = 1
+                    column_no = 3
+            
+            if column_no == 1 or column_no == 2:
+                displaysurf.blit(text,text_rect)
+        file.close()
 
     if menu == "quit":
         gamename_txt_title =current_title_fnt.render("Ships That Battle",True, current_text_col)
