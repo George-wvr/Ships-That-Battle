@@ -483,6 +483,7 @@ while True:
             
             if column_no == 1 or column_no == 2:
                 displaysurf.blit(text,text_rect)
+        file.close()
 
     if menu == "quit":
         gamename_txt_title =current_title_fnt.render("Ships That Battle",True, current_text_col)
