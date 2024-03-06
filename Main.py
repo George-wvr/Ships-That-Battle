@@ -172,7 +172,6 @@ def submit_validate(name_text, age_text):
     else:
         return False
         
-    
 
 #Buttons
 #Format: x_pos, y_pos, width, height, colourchange, fontchange, text to display, type, action
@@ -506,7 +505,7 @@ while True:
         sys.exit()
 
     if menu == "game":
-        test()
+        run_game(displaysurf)
 
     pygame.display.flip()
     pygame.display.update()
