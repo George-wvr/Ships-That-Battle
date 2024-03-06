@@ -1,7 +1,7 @@
 #importing Libraries
 import pygame,sys
 from pygame.locals import *
-
+from game import *
 #Setting up pygame instance:
 pygame.init()
 
@@ -506,7 +506,7 @@ while True:
         sys.exit()
 
     if menu == "game":
-        print("Load")
+        test()
 
     pygame.display.flip()
     pygame.display.update()
