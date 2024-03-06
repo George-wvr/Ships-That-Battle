@@ -1,7 +1,7 @@
 #importing Libraries
 import pygame,sys
 from pygame.locals import *
-
+from game import *
 #Setting up pygame instance:
 pygame.init()
 
@@ -172,7 +172,6 @@ def submit_validate(name_text, age_text):
     else:
         return False
         
-    
 
 #Buttons
 #Format: x_pos, y_pos, width, height, colourchange, fontchange, text to display, type, action
@@ -506,7 +505,7 @@ while True:
         sys.exit()
 
     if menu == "game":
-        print("Load")
+        run_game(displaysurf)
 
     pygame.display.flip()
     pygame.display.update()
