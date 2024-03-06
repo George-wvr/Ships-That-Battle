@@ -1,1 +1,18 @@
-Susan 0
+Mary - 255
+Steve - 240
+Susan - 215
+Max - 210
+Mary - 210
+Greg - 200
+Adam - 180
+Susan - 175
+Adam - 165
+Max - 150
+Susan - 130
+Greg - 120
+Sally - 100
+Bob - 90
+Coolman - 85
+Squidward - 80
+Elijah - 5
+
