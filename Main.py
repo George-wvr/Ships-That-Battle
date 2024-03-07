@@ -64,6 +64,10 @@ sheight = 600
 displaysurf = pygame.display.set_mode((swidth,sheight))
 pygame.display.set_caption("Ships That Battle")
 
+# setting FPS
+FPS = 120
+framesps = pygame.time.Clock()
+
 #Button Class
 class Button():
     def __init__(self, x_pos, y_pos, width, height, colourtype, fonttype, text, type, action):
@@ -505,7 +509,8 @@ while True:
         sys.exit()
 
     if menu == "game":
-        run_game(displaysurf)
+        run_game(displaysurf, current_screen_col, current_text_col, current_standard_fnt, current_title_fnt)
 
-    pygame.display.flip()
     pygame.display.update()
+    pygame.display.flip()
+    framesps.tick(FPS)
