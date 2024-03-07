@@ -6,7 +6,7 @@ from game import *
 pygame.init()
 
 #variables and constants
-menu = "start" #so that the start menu loads on start up
+menu = "game" #so that the start menu loads on start up
 user_name_text = ""
 user_age_input = ""
 active_box = None
@@ -63,6 +63,10 @@ sheight = 600
 
 displaysurf = pygame.display.set_mode((swidth,sheight))
 pygame.display.set_caption("Ships That Battle")
+
+# setting FPS
+FPS = 120
+framesps = pygame.time.Clock()
 
 #Button Class
 class Button():
@@ -505,7 +509,9 @@ while True:
         sys.exit()
 
     if menu == "game":
+        #displaysurf.fill(active_box_col)
         run_game(displaysurf)
 
-    pygame.display.flip()
     pygame.display.update()
+    pygame.display.flip()
+    framesps.tick(FPS)

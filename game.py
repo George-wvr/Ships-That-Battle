@@ -4,6 +4,7 @@
 import pygame
 from pygame.locals import *
 
+#Colours
 sea_col = (68, 114, 196)
 island_col = (140, 105, 0)
 boat_p_col = (0, 0, 0)
@@ -12,8 +13,20 @@ black = (0, 0, 0)
 caution_col = (255, 0, 0)
 dock_col = (69, 89, 105)
 boat_e_col = (167, 102, 173)
+menu_col = (128, 128, 128)
+game_box_col = (175, 171, 171)
 
-class Island(): #pygame.sprite.Sprite
+#Variables and constants
+swidth = 1250
+sheight = 600
+boat_speed = 1.5
+enemy_boat_speed = 0.5
+cool_down = 0  # the cooldown for between missile fires
+score = 0
+health = 100
+
+#Island class
+class Island():
     def __init__(self, x_pos, y_pos, width, height):
         #super().__init__()
         self.x = x_pos
@@ -43,9 +56,84 @@ island6 = Island(75, 400, 25, 100)
 
 all_islands = [island1, island2, island3, island4, island5, island6]
 
+#Player boat class
+class Boat(pygame.sprite.Sprite):
+    def __init__(self, x_pos, y_pos):
+        super().__init__()
+        self.x = x_pos
+        self.y = y_pos
+        self.width = 25
+        self.height = 25
+        self.boat = pygame.Surface((self.width, self.height),8)
+        self.rect = self.boat.get_rect(center=(self.x, self.y))
+
+    def draw(self, displaysurf):
+        self.move()
+        self.rect = self.boat.get_rect(center=(self.x, self.y))
+        self.boat.fill(boat_p_col)
+        displaysurf.blit(self.boat, self.rect)
+
+    def goto(self, x_pos, y_pos, displaysurf):
+        self.x = x_pos
+        self.y = y_pos
+        self.rect = self.boat.get_rect(topleft=(self.x, self.y))
+        displaysurf.blit(self.boat, self.rect)
+        pygame.display.update()
+
+    def move(self):
+        pressedkey = pygame.key.get_pressed()
+
+        if pressedkey[K_a]:
+            if self.rect.left > 0:
+                # print("left")
+                self.x -= boat_speed
+
+        if self.rect.left < swidth - (self.width):
+            if pressedkey[K_d]:
+                # print("right")
+                self.x += boat_speed
+
+        if self.rect.top > 0:
+            if pressedkey[K_w]:
+                # print("up")
+                self.y -= boat_speed
+
+        if self.rect.top < sheight - self.height:
+            if pressedkey[K_s]:
+                # print("down")
+                self.y += boat_speed
+
+#Players Boat
+player_boat = Boat(10,10)
+
+#Screen design
+def layout(displaysurf):
+    displaysurf.fill(menu_col)
+
+    #Information boxes
+    box = pygame.Surface((225,50))
+    box.fill(game_box_col)
+    #timer
+    displaysurf.blit(box, (25,25))
+
+    #Health
+    displaysurf.blit(box, (25,125))
+    
+    #Score
+    displaysurf.blit(box, (25,225))
+
+    #Box Borders
+    box = pygame.Surface((225,50))
+    box_rect = box.get_rect(topleft = (25,25))
+    pygame.draw.rect(displaysurf, black, box_rect, 5)
+
+
 #Main Function for the game
 def run_game(displaysurf):
-    print("Running")
 
-    for island in all_islands:
-        island.draw(displaysurf)
+    layout(displaysurf)
+
+    #for island in all_islands:
+        #island.draw(displaysurf)
+
+    player_boat.draw(displaysurf)
