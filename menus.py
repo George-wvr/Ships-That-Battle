@@ -1,11 +1,10 @@
 #importing Libraries
 import pygame,sys
 from pygame.locals import *
-from game import *
-#Setting up pygame instance:
-pygame.init()
 
 #variables and constants
+swidth = 1250
+sheight = 600
 menu = "start" #so that the start menu loads on start up
 user_name_text = ""
 user_age_input = ""
@@ -56,18 +55,6 @@ fnt_standard_alt = pygame.font.Font("OpenDyslexic-Regular.ttf", 30)
 current_title_fnt = fnt_title_defult
 current_standard_fnt = fnt_standard_defult
 
-
-#Game window
-swidth = 1250
-sheight = 600
-
-displaysurf = pygame.display.set_mode((swidth,sheight))
-pygame.display.set_caption("Ships That Battle")
-
-# setting FPS
-FPS = 120
-framesps = pygame.time.Clock()
-
 #Button Class
 class Button():
     def __init__(self, x_pos, y_pos, width, height, colourtype, fonttype, text, type, action):
@@ -83,7 +70,7 @@ class Button():
         self.shape = pygame.Surface((self.width,self.height))
         self.rct = self.shape.get_rect(topleft=(self.x, self.y))
 
-    def draw(self):        
+    def draw(self, displaysurf):        
         if self.fonts == 0:
             words = current_standard_fnt.render(self.text,True,current_text_col) # creates text
 
@@ -212,36 +199,23 @@ yes_btn = Button(400, 275, 200, 50, 0, 0, "Yes", 0, "leave_game")
 no_btn = Button(700, 275, 200, 50, 0, 0, "No", 0, "start")
 quit_page_buttons = [yes_btn, no_btn, home_btn]
 
-while True:
-    displaysurf.fill(current_screen_col)
-    #sets the key pressed to noting so that nothing is inputed in the textboxes at this point
-    event_key_pressed = None
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            pygame.quit()
-            sys.exit()
-        #assigns the letter press to a variable
-        if event.type == KEYDOWN:
-            event_key_pressed = event.unicode
+def main_menu(displaysurf):
+    #Renders the title words
+    gamename_txt_title =current_title_fnt.render("Ships That Battle",True, current_text_col)
+    text_rect = gamename_txt_title.get_rect(center = (swidth/2, 30))
+    displaysurf.blit(gamename_txt_title, text_rect)
 
-    #Main Menu
-    if menu == "start":
-        #Renders the title words
-        gamename_txt_title =current_title_fnt.render("Ships That Battle",True, current_text_col)
-        text_rect = gamename_txt_title.get_rect(center = (swidth/2, 30))
-        displaysurf.blit(gamename_txt_title, text_rect)
-
-        #Loops each button in the start menu
-        for button in start_buttons:
-            button.draw()
-            #checks if the mouse is over the button
-            if button.hover() == True:
-                #checks if the button has been clicked on
-                if button.clicked() == True:
-                    if button.type == 0:
-                        menu = button.action
-                    elif button.type == 1:
-                        scheme_change(button.action)
+    #Loops each button in the start menu
+    for button in start_buttons:
+        button.draw(displaysurf)
+        #checks if the mouse is over the button
+        if button.hover() == True:
+            #checks if the button has been clicked on
+            if button.clicked() == True:
+                if button.type == 0:
+                    menu = button.action
+                elif button.type == 1:
+                    scheme_change(button.action)
 
     if menu == "validation":
         submit = False
@@ -511,6 +485,4 @@ while True:
     if menu == "game":
         run_game(displaysurf, current_screen_col, current_text_col, current_standard_fnt, current_title_fnt)
 
-    pygame.display.update()
-    pygame.display.flip()
-    framesps.tick(FPS)
+
