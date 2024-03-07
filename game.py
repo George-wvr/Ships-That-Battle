@@ -152,11 +152,11 @@ def render_text(displaysurf, current_standard_fnt, current_text_col):
 #Health Text
     textto_render = "Health: " + str(health)
     text = current_standard_fnt.render(textto_render,True, current_text_col)
-    displaysurf.blit(textto_render, (35,130))
+    displaysurf.blit(text, (35,132))
 #Score text
     textto_render = "Score: "+ str(score)
     text = current_standard_fnt.render(textto_render, True, current_text_col)
-    displaysurf.blit(text,(35,230))
+    displaysurf.blit(text,(35,232))
 
 
 

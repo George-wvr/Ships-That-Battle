@@ -6,7 +6,7 @@ from game import *
 pygame.init()
 
 #variables and constants
-menu = "game" #so that the start menu loads on start up
+menu = "start" #so that the start menu loads on start up
 user_name_text = ""
 user_age_input = ""
 active_box = None
