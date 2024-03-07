@@ -509,8 +509,7 @@ while True:
         sys.exit()
 
     if menu == "game":
-        #displaysurf.fill(active_box_col)
-        run_game(displaysurf)
+        run_game(displaysurf, current_screen_col, current_text_col, current_standard_fnt, current_title_fnt)
 
     pygame.display.update()
     pygame.display.flip()

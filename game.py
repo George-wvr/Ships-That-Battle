@@ -19,7 +19,7 @@ game_box_col = (175, 171, 171)
 #Variables and constants
 swidth = 1250
 sheight = 600
-boat_speed = 0.117
+boat_speed = 0.5
 enemy_boat_speed = 0.5
 cool_down = 0  # the cooldown for between missile fires
 score = 0
@@ -147,12 +147,18 @@ def layout(displaysurf):
     box.fill(sea_col)
     displaysurf.blit(box,(275,25))
 
+def render_text(displaysurf, current_standard_fnt, current_text_col):
+    textto_render = "Score: "+ str(score)
+    text = current_standard_fnt.render(textto_render, True, current_text_col)
+    displaysurf.blit(text,(35,230))
+
+
 #Main Function for the game
-def run_game(displaysurf):
+def run_game(displaysurf, current_screen_col, current_text_col, current_standard_fnt, current_title_fnt):
 
     layout(displaysurf)
 
     #for island in all_islands:
         #island.draw(displaysurf)
-
+    render_text(displaysurf, current_standard_fnt, current_text_col)
     player_boat.draw(displaysurf)
