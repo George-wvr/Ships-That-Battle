@@ -147,11 +147,18 @@ def layout(displaysurf):
     box.fill(sea_col)
     displaysurf.blit(box,(275,25))
 
-
+#Rendering text on boxes
 def render_text(displaysurf, current_standard_fnt, current_text_col):
+#Health Text
+    textto_render = "Health: " + str(health)
+    text = current_standard_fnt.render(textto_render,True, current_text_col)
+    displaysurf.blit(textto_render, (35,130))
+#Score text
     textto_render = "Score: "+ str(score)
     text = current_standard_fnt.render(textto_render, True, current_text_col)
     displaysurf.blit(text,(35,230))
+
+
 
 #Main Function for the game
 def run_game(displaysurf, current_screen_col, current_text_col, current_standard_fnt, current_title_fnt):
