@@ -677,7 +677,7 @@ class Boat(pygame.sprite.Sprite):
                 self.y += boat_speed
 
 #Players Boat
-player_boat = Boat(280, 30)
+player_boat = Boat(1175, 500)
 
 ##################################### ENEMY BOAT ####################################
 
@@ -702,7 +702,9 @@ class Eboat(pygame.sprite.Sprite):
         self.rect.center = ((self.x), (self.y))
 
     def draw(self):
-        self.sail()
+        distance = math.sqrt(((player_boat.x - self.x)**2)+((player_boat.y - self.y)**2))
+        if distance <200:
+            self.sail()
         self.boat.fill(self.colour)
         displaysurf.blit(self.boat, self.rect)
 
@@ -833,33 +835,25 @@ class Island(pygame.sprite.Sprite):
         displaysurf.blit(self.island, (self.x, self.y))
         pygame.display.update()
 
-
-island1 = Island(50, 100, 100, 200)
-island2 = Island(1000, 250, 75, 75)
-island3 = Island(475, 250, 50, 100)
-island4 = Island(650, 100, 50, 25)
-island5 = Island(700, 350, 200, 150)
-island6 = Island(75, 400, 25, 100)
+#x_pos, y_pos, width, height
+island1 = Island(650, 350, 200, 150)
+island2 = Island(775, 100, 75, 200)
+island3 = Island(950, 200, 100, 50)
+island4 = Island(375, 50, 50, 160)
+island5 = Island(550, 125, 50, 75)
+island6 = Island(350, 250, 75, 100)
+island7 = Island(400, 450, 100, 50)
 
 ######################### GROUPING THINGS TOGETHER ##################################
 player_bombs = []
 enemy_bombs = []
 
 islands = pygame.sprite.Group()
-islands.add(island1)
-islands.add(island2)
-islands.add(island3)
-islands.add(island4)
-islands.add(island5)
-islands.add(island6)
+islands.add(island1, island2, island3, island4, island5, island6, island7)
+
 
 allsprites = pygame.sprite.Group()
-allsprites.add(island1)
-allsprites.add(island2)
-allsprites.add(island3)
-allsprites.add(island4)
-allsprites.add(island5)
-allsprites.add(island6)
+allsprites.add(island1, island2, island3, island4, island5, island6, island7)
 
 enemies = pygame.sprite.Group()
 enemies.add(enemy_boat1, enemy_boat2)
