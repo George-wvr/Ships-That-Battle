@@ -1,7 +1,6 @@
 #importing Libraries
 import pygame,sys
 from pygame.locals import *
-from schemes import *
 
 #variables and constants
 swidth = 1250

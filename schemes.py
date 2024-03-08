@@ -47,8 +47,3 @@ fnt_standard_alt = pygame.font.Font("OpenDyslexic-Regular.ttf", 30)
 
 current_title_fnt = fnt_title_defult
 current_standard_fnt = fnt_standard_defult
-
-#render standard font
-def render_standard_current(text):
-    render_text = current_title_fnt.render(text,True, current_text_col)
-    return render_text
