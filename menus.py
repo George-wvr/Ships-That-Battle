@@ -1,6 +1,7 @@
 #importing Libraries
 import pygame,sys
 from pygame.locals import *
+from schemes import *
 
 #variables and constants
 swidth = 1250
@@ -46,14 +47,7 @@ def scheme_change(change):
         
 
 #Fonts:
-fnt_title_defult = pygame.font.SysFont("Calibri", 60)
-fnt_title_alt = pygame.font.Font("OpenDyslexic-Regular.ttf", 40)
 
-fnt_standard_defult = pygame.font.SysFont("Calibri", 40)
-fnt_standard_alt = pygame.font.Font("OpenDyslexic-Regular.ttf", 30)
-
-current_title_fnt = fnt_title_defult
-current_standard_fnt = fnt_standard_defult
 
 #Button Class
 class Button():
@@ -201,9 +195,9 @@ quit_page_buttons = [yes_btn, no_btn, home_btn]
 
 def main_menu(displaysurf):
     #Renders the title words
-    gamename_txt_title =current_title_fnt.render("Ships That Battle",True, current_text_col)
-    text_rect = gamename_txt_title.get_rect(center = (swidth/2, 30))
-    displaysurf.blit(gamename_txt_title, text_rect)
+    text = render_standard_current("Ships That Battle")
+    text_rect = text.get_rect(center = (swidth/2, 30))
+    displaysurf.blit(text, text_rect)
 
     #Loops each button in the start menu
     for button in start_buttons:
