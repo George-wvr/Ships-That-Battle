@@ -1,6 +1,7 @@
 #importing Libraries
 import pygame,sys
 from pygame.locals import *
+from main import renndertxt_title_current
 
 #variables and constants
 swidth = 1250
@@ -24,29 +25,6 @@ txt_error_col = (255, 0, 0)
 current_text_col = txt_default
 
 active_box_col = (0, 255, 0)
-
-#function to change colours and fonts:
-def scheme_change(change):
-    global current_screen_col
-    global current_title_fnt
-    global current_standard_fnt
-    global current_text_col
-    if change == "col1":
-        current_screen_col = screen_default
-        current_text_col = txt_default
-    elif change == "col2":
-        current_screen_col = screen_alt
-        current_text_col = txt_alt
-    elif change == "fnt1":
-        current_title_fnt = fnt_title_defult
-        current_standard_fnt = fnt_standard_defult
-    elif change == "fnt2":
-        current_title_fnt = fnt_title_alt
-        current_standard_fnt = fnt_standard_alt
-        
-
-#Fonts:
-
 
 #Button Class
 class Button():
@@ -194,7 +172,7 @@ quit_page_buttons = [yes_btn, no_btn, home_btn]
 
 def main_menu(displaysurf):
     #Renders the title words
-    text = render_standard_current("Ships That Battle")
+    text = rendertxt_title_current("Ships That Battle")
     text_rect = text.get_rect(center = (swidth/2, 30))
     displaysurf.blit(text, text_rect)
 
