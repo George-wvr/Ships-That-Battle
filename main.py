@@ -629,6 +629,8 @@ def run_game():
     if cool_down > 0:
         cool_down -= 1
 
+    mins, seconds = update_time(mins, seconds)
+
 ################################ CLASSES FOR GAME ###################################
 ################################## PLAYER BOAT ######################################
 
@@ -909,15 +911,20 @@ def render_text(displaysurf, current_standard_fnt, current_text_col):
 #Health Text
     textto_render = "Health: " + str(health)
     text = current_standard_fnt.render(textto_render,True, current_text_col)
-    displaysurf.blit(text, (35,132))
+    text_rect = text.get_rect(center = (137.5, 150))
+    displaysurf.blit(text,text_rect)
 #Score text
     textto_render = "Score: "+ str(score)
     text = current_standard_fnt.render(textto_render, True, current_text_col)
-    displaysurf.blit(text,(35,232))
+    text_rect = text.get_rect(center = (137.5, 250))
+    displaysurf.blit(text,text_rect)
 #Time
     textto_render = str(mins)+":"+str(seconds)
     text = current_standard_fnt.render(textto_render, True, current_text_col)
-    displaysurf.blit(text,(60,32))
+    text_rect = text.get_rect(center = (137.5, 50))
+    displaysurf.blit(text,text_rect)
+
+######################################## TIMER UPDATES ###########################################
 
 #################################### GAME LOOP #######################################
 while True:
