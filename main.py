@@ -22,6 +22,8 @@ enemy_boat_speed = 0.25
 cool_down = 0  # the cooldown for between missile fires
 score = 0
 health = 100
+mins = 2
+seconds = 0
 
 ######################################################################################
 #Importing music and audio
@@ -901,19 +903,6 @@ def layout(displaysurf):
     box.fill(sea_col)
     displaysurf.blit(box,(275,25))
 
-#Rendering text on boxes
-def render_text(displaysurf, current_standard_fnt, current_text_col):
-    global health
-    global score
-#Health Text
-    textto_render = "Health: " + str(health)
-    text = current_standard_fnt.render(textto_render,True, current_text_col)
-    displaysurf.blit(text, (35,132))
-#Score text
-    textto_render = "Score: "+ str(score)
-    text = current_standard_fnt.render(textto_render, True, current_text_col)
-    displaysurf.blit(text,(35,232))
-
 ################################ TEXT ON BOXES #######################################
 #Rendering text on boxes
 def render_text(displaysurf, current_standard_fnt, current_text_col):
@@ -925,6 +914,10 @@ def render_text(displaysurf, current_standard_fnt, current_text_col):
     textto_render = "Score: "+ str(score)
     text = current_standard_fnt.render(textto_render, True, current_text_col)
     displaysurf.blit(text,(35,232))
+#Time
+    textto_render = str(mins)+":"+str(seconds)
+    text = current_standard_fnt.render(textto_render, True, current_text_col)
+    displaysurf.blit(text,(60,32))
 
 #################################### GAME LOOP #######################################
 while True:
