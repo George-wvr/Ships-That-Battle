@@ -211,7 +211,7 @@ no_btn = Button(700, 275, 200, 50, 0, 0, "No", 0, "start")
 quit_page_buttons = [yes_btn, no_btn, home_btn]
 
 #End Game
-#h_score_btn2 = Button(525, 300, 200, 50, 0, 0, "Leader Board", 0, "scores")
+h_score_btn2 = Button(525, 300, 200, 50, 0, 0, "Leader Board", 0, "scores")
 
 #########################################################################################
 
