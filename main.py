@@ -10,7 +10,7 @@ import math
 pygame.init()
 
 #variables and constants
-menu = "game" #so that the start menu loads on start up
+menu = "endgame" #so that the start menu loads on start up
 user_name_text = ""
 user_age_input = ""
 active_box = None
@@ -24,6 +24,7 @@ score = 0
 health = 100
 mins = 2
 seconds = 0
+frame_count = 0
 
 ######################################################################################
 #Importing music and audio
@@ -208,6 +209,9 @@ score_buttons = [home_btn]
 yes_btn = Button(400, 275, 200, 50, 0, 0, "Yes", 0, "leave_game")
 no_btn = Button(700, 275, 200, 50, 0, 0, "No", 0, "start")
 quit_page_buttons = [yes_btn, no_btn, home_btn]
+
+#End Game
+h_score_btn2 = Button(525, 300, 200, 50, 0, 0, "Leader Board", 0, "scores")
 
 #########################################################################################
 
@@ -566,29 +570,60 @@ def quitgame():
                     menu = button.action
                 elif button.type == 1:
                     scheme_change(button.action)
+##################################### END OF GAME ##############################################
+
+#Quit Game
+def endgame():
+    global menu
+
+    text =current_title_fnt.render("Ships That Battle",True, current_text_col)
+    text_rect = text.get_rect(center = (swidth/2, 30))
+    displaysurf.blit(text, text_rect)
+    text =current_title_fnt.render("Game Over",True, current_text_col)
+    text_rect = text.get_rect(center = (swidth/2, 150))
+    displaysurf.blit(text, text_rect)
+    #Buttons
+    for button in end_game_page_buttons:
+        button.draw()
+        #checks if the mouse is over the button
+        if button.hover() == True:
+            #checks if the button has been clicked on
+            if button.clicked() == True:
+                if button.type == 0:
+                    menu = button.action
+                elif button.type == 1:
+                    scheme_change(button.action)
+
 ################################## GAME FUNCTION #####################################
 
 def run_game():
     global cool_down
     global health
     global score
+    global seconds
+    global menu
 
     layout(displaysurf)
     #for island in all_islands:
     #island.draw(displaysurf)
     render_text(displaysurf, current_standard_fnt, current_text_col)
 
+    #Addign the new rects of the players and enimis to the all sprites group so they can be rendered together
     allsprites.add(player_boat)
     allsprites.add(enemy_boat1, enemy_boat2)
-
+    #Drawing all the sprites in one go
     for thing in allsprites:
         thing.draw()
 
+    #Player Collision with the islands
     if pygame.sprite.spritecollideany(player_boat, islands):
+        #Set the island colour to red temperelally
         pygame.sprite.spritecollideany(player_boat, islands).colour(caution_col)
         health = 100
+        time_penalty()
         player_boat.goto(swidth - 75, sheight - 50)
 
+    #Shooting player missiles
     if event.type == pygame.MOUSEBUTTONDOWN:
         if event.button == 1 and cool_down <= 0:
             cool_down = 50
@@ -597,7 +632,7 @@ def run_game():
             # Adds a new instance of the bomb to the list
             player_bombs.append(Bomb(player_boat.x, player_boat.y, mouse_x, mouse_y, 0))
 
-
+    #Players Bullets
     for bullet in player_bombs:
         bullet.move()
         # checks if the bullet colides with an island
@@ -613,7 +648,7 @@ def run_game():
                 enemy.hit()
                 score += 5
 
-
+    #Enemies bullets
     for bullet in enemy_bombs:
         bullet.move()
         # checks if the bullet colides with an island
@@ -622,14 +657,21 @@ def run_game():
                 pygame.mixer.Sound.play(thump)
                 bullet.set_crash()
         
+        #Player Boat collision
         if player_boat.rect.collidepoint(bullet.x, bullet.y):
-            health -= 1
+            health -= 5
             bullet.set_crash()
+
+    if health < 1:
+        health = 100
+        time_penalty()
+        player_boat.goto(swidth - 75, sheight - 50)
+
 
     if cool_down > 0:
         cool_down -= 1
 
-    mins, seconds = update_time(mins, seconds)
+    update_time()
 
 ################################ CLASSES FOR GAME ###################################
 ################################## PLAYER BOAT ######################################
@@ -919,12 +961,49 @@ def render_text(displaysurf, current_standard_fnt, current_text_col):
     text_rect = text.get_rect(center = (137.5, 250))
     displaysurf.blit(text,text_rect)
 #Time
-    textto_render = str(mins)+":"+str(seconds)
+    if seconds <10:
+        textto_render = str(mins)+":0"+str(seconds)
+    else:
+        textto_render = str(mins)+":"+str(seconds)
+
     text = current_standard_fnt.render(textto_render, True, current_text_col)
     text_rect = text.get_rect(center = (137.5, 50))
     displaysurf.blit(text,text_rect)
 
 ######################################## TIMER UPDATES ###########################################
+
+def update_time():
+    global mins
+    global seconds
+    global frame_count
+    global menu
+
+    if frame_count == 120:
+        seconds -= 1
+        frame_count = 0
+    if mins == 0 and seconds == 0:
+        print("Update")
+        menu = "start"
+    if seconds == 0:
+        mins -= 1
+        seconds = 59
+    
+    frame_count += 1
+    
+def time_penalty():
+    global mins
+    global seconds
+    global menu
+
+    if seconds > 9:
+        seconds -= 10
+    elif mins < 1 and seconds < 10 :
+        print("penalty")
+        menu = "start"
+    else:
+        mins = 0
+        take_off = 10 - seconds #to get how many from the next minute too
+        seconds = 60 - take_off
 
 #################################### GAME LOOP #######################################
 while True:
@@ -961,6 +1040,8 @@ while True:
     if menu == "game":
         run_game()
 
+    if menu == "endgame":
+        endgame()
 
     pygame.display.update()
     pygame.display.flip()
