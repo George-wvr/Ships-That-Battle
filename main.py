@@ -11,16 +11,16 @@ pygame.init()
 
 #variables and constants
 menu = "endgame" #so that the start menu loads on start up
-user_name_text = ""
+user_name_text = "George"
 user_age_input = ""
 active_box = None
-invalid_inputs = [None, "\b", "\n", "\t", "\r", "^[", '"', "#"] 
+invalid_inputs = [None, "\b", "\n", "\t", "\r", "^[", '"', "#"]
 n_message = ""
 a_message = ""
 boat_speed = 0.5
 enemy_boat_speed = 0.25
 cool_down = 0  # the cooldown for between missile fires
-score = 0
+score = 10
 health = 100
 mins = 2
 seconds = 0
@@ -114,7 +114,7 @@ displaysurf = pygame.display.set_mode((swidth,sheight))
 pygame.display.set_caption("Ships That Battle")
 
 # setting FPS
-FPS = 120
+FPS = 60
 framesps = pygame.time.Clock()
 
 #####################################################################################
@@ -146,7 +146,7 @@ class Button():
 
         if self.colours == 0:
             self.shape.fill(current_screen_col)
-        
+
         elif self.colours == 1:
             self.shape.fill(screen_default)
             #Includes a change in font colour for the correct background colour
@@ -161,7 +161,7 @@ class Button():
         #due to different sizes with the fonts
         if current_standard_fnt == fnt_standard_defult or self.fonts == 1:
             self.shape.blit(words,(10,10)) # adds the text to the button surface
-        
+
         elif current_standard_fnt == fnt_standard_alt or self.fonts == 2:
             self.shape.blit(words,(10,0))
         displaysurf.blit(self.shape,(self.x,self.y)) # adds the button surface to the displaysurf
@@ -170,7 +170,7 @@ class Button():
         m_pos = pygame.mouse.get_pos()
         if self.rct.collidepoint(m_pos):
             return True
-        
+
     def clicked(self):
         if event.type == pygame.MOUSEBUTTONUP and self.hover() == True:
             return True
@@ -211,7 +211,10 @@ no_btn = Button(700, 275, 200, 50, 0, 0, "No", 0, "start")
 quit_page_buttons = [yes_btn, no_btn, home_btn]
 
 #End Game
-h_score_btn2 = Button(525, 300, 200, 50, 0, 0, "Leader Board", 0, "scores")
+h_score_btn2 = Button(175, 300, 350, 50, 0, 0, "Leader Board", 0, "scores")
+returnto_main = Button(525, 300, 200, 50, 0, 0, "Main Menu", 0, "start")
+play_again = Button(825, 300, 200, 50, 0, 0, "Play Again", 0, "game")
+end_game_page_buttons = [h_score_btn2, returnto_main, play_again]
 
 #########################################################################################
 
@@ -231,7 +234,7 @@ def name_validate(text):
 
     if len(text) > 15:
         returnmessage =  "Name is too long, maximum length is 15 characters"
-    
+
     return returnmessage
 
 #Age validation:
@@ -275,7 +278,7 @@ def main_menu():
     global menu
     #Renders the title words
     text = rendertxt_title_current("Ships That Battle")
-    text_rect = text.get_rect(center = (swidth/2, 30))
+    text_rect = text.get_rect(center = (swidth/2, 35))
     displaysurf.blit(text, text_rect)
 
     #Loops each button in the start menu
@@ -292,16 +295,11 @@ def main_menu():
 #########################################################################################
 #Validation page
 def validation_page():
-    global menu
-    global active_box
-    global user_name_text
-    global user_age_input
-    global n_message
-    global a_message
+    global menu, active_box, user_name_text, user_age_input, n_message, a_message, mins, seconds
     submit = False
 
     text = rendertxt_title_current("Ships That Battle")
-    text_rect = text.get_rect(center = (swidth/2, 30))
+    text_rect = text.get_rect(center = (swidth/2, 35))
     displaysurf.blit(text, text_rect)
 
     #Name input
@@ -385,7 +383,7 @@ def validation_page():
             active_box = "name"
         elif age_rect.collidepoint(m_pos):
             active_box = "age"
-        
+
     #If the backspace is presses takes away the last item in the approprate box
     if event_key_pressed == "\b" and active_box == "name":
         user_name_text = user_name_text[0:-1]
@@ -410,6 +408,8 @@ def validation_page():
         if play_game == True:
             # To do
             menu = "game"
+            mins = 2
+            seconds = 0
 
 #####################################################################################
 #How to play page
@@ -417,21 +417,21 @@ def how_play():
     global menu
 
     text =current_title_fnt.render("Ships That Battle",True, current_text_col)
-    text_rect = text.get_rect(center = (swidth/2, 30))
+    text_rect = text.get_rect(center = (swidth/2, 35))
     displaysurf.blit(text, text_rect)
 
     text =current_standard_fnt.render("How to play:",True, current_text_col)
     text_rect = text.get_rect(center = (swidth/2, 100))
     displaysurf.blit(text, text_rect)
-    
-    #rendering a backing box for the text. 
+
+    #rendering a backing box for the text.
     #Two are needed as it will highlight the text but keep it the same as the default background for easy reading
     box = pygame.Surface((1200,475))
     #if statement to determin the alternat colour of the big box depending on the background
     if current_screen_col == screen_default:
         box.fill(screen_alt)
     elif current_screen_col == screen_alt:
-        box.fill(screen_default) 
+        box.fill(screen_default)
     displaysurf.blit(box, (25, 125))
 
     #Adding a new box over the top of the selected background colour
@@ -471,7 +471,7 @@ def scores():
     global menu
 
     text = current_title_fnt.render("Ships That Battle", True, current_text_col)
-    text_rect = text.get_rect(center = (swidth/2, 30))
+    text_rect = text.get_rect(center = (swidth/2, 35))
     displaysurf.blit(text, text_rect)
 
     #Buttons
@@ -513,7 +513,7 @@ def scores():
     pygame.draw.rect(displaysurf, current_text_col, box_rect, 5, 10)
 
     #Displaying the text after the box
-    displaysurf.blit(text, text_rect)     
+    displaysurf.blit(text, text_rect)    
 
     #All scores:
     #middle of each column is 375 and 875
@@ -544,7 +544,7 @@ def scores():
             elif line_no > 8:
                 line_no = 1
                 column_no = 3
-        
+
         if column_no == 1 or column_no == 2:
             displaysurf.blit(text,text_rect)
     file.close()
@@ -555,7 +555,7 @@ def quitgame():
     global menu
 
     gamename_txt_title =current_title_fnt.render("Ships That Battle",True, current_text_col)
-    text_rect = gamename_txt_title.get_rect(center = (swidth/2, 30))
+    text_rect = gamename_txt_title.get_rect(center = (swidth/2, 35))
     displaysurf.blit(gamename_txt_title, text_rect)
     question_text =current_title_fnt.render("Are you sure you want to quit the game?",True, current_text_col)
     text_rect = question_text.get_rect(center = (swidth/2, 150))
@@ -572,16 +572,88 @@ def quitgame():
                     scheme_change(button.action)
 ##################################### END OF GAME ##############################################
 
-#Quit Game
+#End of Game
 def endgame():
-    global menu
+    global menu, mins, seconds
 
     text =current_title_fnt.render("Ships That Battle",True, current_text_col)
-    text_rect = text.get_rect(center = (swidth/2, 30))
+    text_rect = text.get_rect(center = (swidth/2, 35))
     displaysurf.blit(text, text_rect)
     text =current_title_fnt.render("Game Over",True, current_text_col)
     text_rect = text.get_rect(center = (swidth/2, 150))
     displaysurf.blit(text, text_rect)
+
+    #Displying your Score
+    textto_render = ("Your Score: "+ str(score))
+    text =current_standard_fnt.render(textto_render,True, current_text_col)
+    text_rect = text.get_rect(center = (swidth/2, 450))
+    displaysurf.blit(text, text_rect)
+
+    #Highscore?
+    f = open("high score.txt","r")
+    num = ""
+    highscore = False
+    for line in f:
+        for letter in line:
+            if letter in numbers:
+                num += letter
+                #print(num)
+        if int(num) < score:
+            highscore = True
+            text =current_standard_fnt.render("New High Score",True, txt_error_col)
+            text_rect = text.get_rect(center = (swidth/2, 500))
+            displaysurf.blit(text, text_rect)
+            f.close()
+
+            f = open("high score.txt","w")
+            lineto_write = user_name_text, " - ", str(score)
+            f.writelines(lineto_write)
+            f.close()
+
+    #Not a High Score
+    if highscore == False:
+        num = ""
+        previous_num = ""
+        newnum = ""
+        scorefile = open("all scores.txt","r")
+        #Loops each line in the file
+        for line in scorefile:
+            #loops each letter in the line
+            for letter in line:
+                #if the character is a number it adds to a thing
+                if letter in numbers:
+                    num += letter
+                    print(num)
+
+            #At the end of the line, if the lines number is less than the players score
+            if int(num) < score:
+                print("New Score")
+                #reads all the file data
+                filedata = scorefile.read()
+                #Loops every character in the file
+                for character in filedata:
+                    #if the character is a number then add to the lines number
+                    if character in numbers:
+                        newnum += character
+                    # when at the end of the number
+                    elif character not in numbers:
+                        #checks if the number is the same as the previous number (from the order of the )
+                        if int(newnum) == int(previous_num):
+                            print("location found")
+                            splitdata = filedata.split(previous_num)
+                            ogtext = splitdata[0]
+                            ogtext += str(newnum), "\n", user_name_text, " - ", str(score)
+                            splitdata[0] = ogtext
+                            joineddata = "".join(splitdata)
+                            scorefile.close()
+                            scorefile = open("all scores.txt", "w")
+                            scorefile.writeline(joineddata)
+                            scorefile.close()
+            previous_num = num
+            print("previouse num", previous_num)
+            num = ""
+                           
+                           
     #Buttons
     for button in end_game_page_buttons:
         button.draw()
@@ -590,7 +662,10 @@ def endgame():
             #checks if the button has been clicked on
             if button.clicked() == True:
                 if button.type == 0:
-                    menu = button.action
+                   menu = button.action
+                   if button.action == "game":
+                       mins = 2
+                       seconds = 0
                 elif button.type == 1:
                     scheme_change(button.action)
 
@@ -656,7 +731,7 @@ def run_game():
             if island.rect.collidepoint(bullet.x, bullet.y):
                 pygame.mixer.Sound.play(thump)
                 bullet.set_crash()
-        
+
         #Player Boat collision
         if player_boat.rect.collidepoint(bullet.x, bullet.y):
             health -= 5
@@ -918,7 +993,7 @@ def layout(displaysurf):
 
     #Health
     displaysurf.blit(box, (25,125))
-    
+
     #Score
     displaysurf.blit(box, (25,225))
 
@@ -978,18 +1053,17 @@ def update_time():
     global frame_count
     global menu
 
-    if frame_count == 120:
+    if frame_count == 60:
         seconds -= 1
         frame_count = 0
     if mins == 0 and seconds == 0:
-        print("Update")
-        menu = "start"
+        menu = "endgame"
     if seconds == 0:
         mins -= 1
         seconds = 59
-    
+
     frame_count += 1
-    
+
 def time_penalty():
     global mins
     global seconds
@@ -998,8 +1072,7 @@ def time_penalty():
     if seconds > 9:
         seconds -= 10
     elif mins < 1 and seconds < 10 :
-        print("penalty")
-        menu = "start"
+        menu = "endgame"
     else:
         mins = 0
         take_off = 10 - seconds #to get how many from the next minute too
@@ -1032,7 +1105,7 @@ while True:
 
     if menu == "quit":
         quitgame()
-    
+
     if menu == "leave_game":
         pygame.quit()
         sys.exit()
