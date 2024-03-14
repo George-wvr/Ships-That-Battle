@@ -10,7 +10,7 @@ import math
 pygame.init()
 
 #variables and constants
-menu = "endgame" #so that the start menu loads on start up
+menu = "start" #so that the start menu loads on start up
 user_name_text = "George"
 user_age_input = ""
 active_box = None
@@ -269,6 +269,25 @@ def submit_validate(name_text, age_text):
         return True
     else:
         return False
+    
+################################## UPDATING SCORE TXT FILE ######################################
+
+def update_score_text(num_high):
+    file = open("all scores.txt","r")
+    filedata = file.read()
+    if num_high == "":
+        write_text = user_name_text + " - " + score + "\n" + filedata
+    else:
+        splitdata = filedata.split(num_high)
+        print(splitdata, "old")
+        ogtext = splitdata[0]
+        newtext = ogtext + num_high + "\n" + user_name_text + " - " + str(score)
+        splitdata[0] = newtext
+        print(splitdata, "new")
+        write_text = splitdata[0] + splitdata[1]
+    file.close()
+
+    return write_text
 
 #####################################################################################
 
@@ -614,8 +633,8 @@ def endgame():
     if highscore == False:
         num = ""
         previous_num = ""
-        newnum = ""
         scorefile = open("all scores.txt","r")
+        positioned = False
         #Loops each line in the file
         for line in scorefile:
             #loops each letter in the line
@@ -626,29 +645,15 @@ def endgame():
                     print(num)
 
             #At the end of the line, if the lines number is less than the players score
-            if int(num) < score:
+            if int(num) < score and positioned == False:
                 print("New Score")
-                #reads all the file data
-                filedata = scorefile.read()
-                #Loops every character in the file
-                for character in filedata:
-                    #if the character is a number then add to the lines number
-                    if character in numbers:
-                        newnum += character
-                    # when at the end of the number
-                    elif character not in numbers:
-                        #checks if the number is the same as the previous number (from the order of the )
-                        if int(newnum) == int(previous_num):
-                            print("location found")
-                            splitdata = filedata.split(previous_num)
-                            ogtext = splitdata[0]
-                            ogtext += str(newnum), "\n", user_name_text, " - ", str(score)
-                            splitdata[0] = ogtext
-                            joineddata = "".join(splitdata)
-                            scorefile.close()
-                            scorefile = open("all scores.txt", "w")
-                            scorefile.writeline(joineddata)
-                            scorefile.close()
+                text = update_score_text(previous_num)
+                positioned = True
+                scorefile.close()
+                file = open("all scores.txt","w")
+                file.writelines(text)
+                file.close
+
             previous_num = num
             print("previouse num", previous_num)
             num = ""
