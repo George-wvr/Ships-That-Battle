@@ -11,8 +11,8 @@ pygame.init()
 
 #variables and constants
 menu = "start" #so that the start menu loads on start up
-user_name_text = ""
-user_age_input = ""
+user_name_text = "g"
+user_age_input = "55"
 active_box = None
 invalid_inputs = [None, "\b", "\n", "\t", "\r", "^[", '"', "#"]
 n_message = ""
@@ -358,8 +358,17 @@ def update_score_files():
             num = ""
         scorefile.close()
 
-#####################################################################################
+################################### RESET GAME ##################################################
 
+def reset_game():
+    global score, health, mins, seconds, enemy_boat1
+    score = 0
+    health = 100
+    mins = 2
+    seconds = 0
+    enemy_boat1.goto(300, 100)
+    enemy_boat2.goto(300, 500)
+###############################################################################################
 #Menus
 #Start Menu
 def main_menu():
@@ -461,6 +470,8 @@ def validation_page():
             if button.clicked() == True:
                 if button.type == 0:
                     menu = button.action
+                    if button.action == "game":
+                        reset_game()
                 elif button.type == 2:
                     submit = True
 
@@ -703,8 +714,7 @@ def endgame():
                    update_score_files()
                    menu = button.action
                    if button.action == "game":
-                       mins = 2
-                       seconds = 0
+                        reset_game()
                 elif button.type == 1:
                     scheme_change(button.action)
 
@@ -781,6 +791,8 @@ def run_game():
         time_penalty()
         player_boat.goto(swidth - 75, sheight - 50)
 
+    for node in nodes:
+        node.draw()
 
     if cool_down > 0:
         cool_down -= 1
@@ -863,30 +875,29 @@ class Eboat(pygame.sprite.Sprite):
 
     def draw(self):
         distance = math.sqrt(((player_boat.x - self.x)**2)+((player_boat.y - self.y)**2))
-        if distance <200:
-            self.sail()
+        self.move()
         self.boat.fill(self.colour)
         displaysurf.blit(self.boat, self.rect)
 
         #print(self.x, self.y)
 
-    def sail(self):
-        if self.reset_offset == 0:
-            self.x_offset = random.randint(-100, 100)
-            self.y_offset = random.randint(-100, 100)
-            self.reset_offset = random.randint(100, 120)
-        else:
-            self.reset_offset -= 1
-
-        if (self.x + self.x_offset) < player_boat.x:
-            self.x += enemy_boat_speed
-        elif (self.x + self.x_offset) > player_boat.x:
-            self.x -= enemy_boat_speed
-
-        if (self.y + self.y_offset) < player_boat.y:
-            self.y += enemy_boat_speed
-        elif (self.y + self.y_offset) > player_boat.y:
-            self.y -= enemy_boat_speed
+    def move(self):
+        targetnode = self.target_node()
+        #print("Target:",targetnode.id)
+        currentnode = self.current_node()
+        #print("Current:",currentnode.id)
+        #print(graph)
+        path = self.path(targetnode.id, currentnode.id, graph)
+        nextnode = self.get_node(path[0])
+        #print("nextnode",nextnode.id)
+        if self.x < nextnode.x:
+            self.x+=1
+        if self.x > nextnode.x:
+            self.x-=1
+        if self.y < nextnode.y:
+            self.y+=1
+        if self.y > nextnode.y:
+            self.y-=1
 
         self.get_rectgl()
         displaysurf.blit(self.boat, self.rect)
@@ -895,6 +906,139 @@ class Eboat(pygame.sprite.Sprite):
             self.fire()
         else:
             self.cooldown -= 1
+
+    def target_node(self):
+        distances = []
+        for eachnode in nodes:
+            xdistance = (eachnode.x - player_boat.x)**2
+            #print(xdistance)
+            ydistance = (eachnode.y - player_boat.y)**2
+            #print(ydistance)
+            #math.sqrt is the square root
+            totaldistance = math.sqrt(xdistance+ydistance)
+            #print(totaldistance)
+            distances.append(totaldistance)
+
+        #print(distances)
+        #math.inf is infinity
+        #high number so that all routes are shorter
+        smallestdis = math.inf
+
+        #sets the closest node to 0 - this will be changed
+        closenode = 0
+        #print((len(distances)-1))
+
+        for i in range (len(distances)):
+            if distances[i] < smallestdis:
+                smallestdis = distances[i]
+                closenode = i
+
+        return self.get_node(closenode)
+    
+    def current_node(self):
+        distances = []
+        for eachnode in nodes:
+            xdistance = (eachnode.x - self.x)**2
+            #print(xdistance)
+            ydistance = (eachnode.y - self.y)**2
+            #print(ydistance)
+            #math.sqrt is the square root
+            totaldistance = math.sqrt(xdistance+ydistance)
+            #print(totaldistance)
+            distances.append(totaldistance)
+
+        #print(distances)
+        #math.inf is infinity
+        #high number so that all routes are shorter
+        smallestdis = math.inf
+
+        #sets the closest node to 0 - this will be changed
+        closenode = 0
+        #print((len(distances)-1))
+
+        for i in range (len(distances)):
+            if distances[i] < smallestdis:
+                smallestdis = distances[i]
+                closenode = i
+
+        print(closenode)
+
+        return self.get_node(closenode)
+
+    def goto(self, x_pos, y_pos):
+        self.x = x_pos
+        self.y = y_pos
+        self.rect = self.boat.get_rect(topleft=(self.x, self.y))
+        displaysurf.blit(self.boat, self.rect)
+        pygame.display.update()
+
+    def path(self, currentnode, targetnode, graph):
+        previouse_node = {}
+        distances = {}
+
+        #sets the distance between each node to infinity
+        for i in graph:
+            distances[i] = math.inf
+
+        distances[currentnode] = 0
+
+        while graph:
+        #finding the node that needs to be explored (with the shortest distance)
+            shortest = None
+
+            for node in graph:
+                if shortest == None:
+                    shortest = node
+                elif distances[node] < distances[shortest]:
+                    shortest = node
+                #print(shortest)
+
+            for connection, dist in graph[shortest].items():
+                #print(connection, dist)
+
+                if connection in graph:
+                    #print("In graph")
+                    if distances[connection] > (dist + distances[shortest]):
+                        distances[connection] = (dist + distances[shortest])
+                        previouse_node[connection] = shortest
+
+                #print(distances)
+                #print(previouse_node)
+
+            graph.pop(shortest)
+            #print(graph)
+        print("Exited loop")
+
+        shortest_path = [targetnode]
+        location = targetnode
+        while location != currentnode:
+            print(location)
+            toadd = previouse_node[location]
+            print(toadd)
+            shortest_path.append(toadd)
+            location = toadd
+        if len(shortest_path) > 1:
+            shortest_path.pop(0)
+        print(shortest_path)
+        return shortest_path 
+        
+    def get_node(self, id):
+        if id == 0:
+            return node0
+        elif id == 1:
+            return node1
+        elif id == 2:
+            return node2
+        elif id == 3:
+            return node3
+        elif id == 4:
+            return node4
+        elif id == 5:
+            return node5
+        elif id == 6:
+            return node6
+        else:
+            return node0
 
     def hit(self):
         global score
@@ -1004,6 +1148,25 @@ island5 = Island(550, 125, 50, 75)
 island6 = Island(350, 250, 75, 100)
 island7 = Island(400, 450, 100, 50)
 
+######################################## NODES ##############################################
+
+class Node(pygame.sprite.Sprite):
+    def __init__(self, x_pos, y_pos, id):
+        super().__init__()
+        self.x = x_pos
+        self.y = y_pos
+        self.width = 10
+        self.height = 10
+        self.id = id
+        self.surf = pygame.Surface((self.width, self.height))
+        self.rect = self.surf.get_rect()
+        self.rect.topleft = (self.x, self.y)
+
+    def draw(self):
+        self.surf.fill(black)
+        displaysurf.blit(self.surf, (self.x, self.y))
+
+
 ######################### GROUPING THINGS TOGETHER ##################################
 player_bombs = []
 enemy_bombs = []
@@ -1017,6 +1180,17 @@ allsprites.add(island1, island2, island3, island4, island5, island6, island7)
 
 enemies = pygame.sprite.Group()
 enemies.add(enemy_boat1, enemy_boat2)
+
+node0 = Node(200, 300, 0)
+node1 = Node(250, 100, 1)
+node2 = Node(400, 220, 2)
+node3 = Node(500, 500, 3)
+node4 = Node(550, 200, 4)
+node5 = Node(675, 300, 5)
+node6 = Node(750, 200, 6)
+
+nodes = pygame.sprite.Group()
+nodes.add(node0,node1,node2,node3,node4,node5,node6)
 
 ############################# FUNCTIONS FOR THE GAME##################################
 ############################ GENERAL LAYOUT OF SCREEN ################################
@@ -1129,6 +1303,16 @@ while True:
         #assigns the letter press to a variable
         if event.type == KEYDOWN:
             event_key_pressed = event.unicode
+
+    graph = {
+    0:{1:2, 2:2, 3:4},
+    1:{0:2, 2:2, 3:6, 4:3},
+    2:{0:2, 1:2, 4:1},
+    3:{0:4, 1:6, 5:3},
+    4:{1:3, 2:1, 5:2, 6:2},
+    5:{3:3, 4:2, 6:1},
+    6:{4:2, 5:1}
+    }
 
     if menu == "start":
         main_menu()
