@@ -11,16 +11,16 @@ pygame.init()
 
 #variables and constants
 menu = "start" #so that the start menu loads on start up
-user_name_text = "George"
+user_name_text = ""
 user_age_input = ""
 active_box = None
 invalid_inputs = [None, "\b", "\n", "\t", "\r", "^[", '"', "#"]
 n_message = ""
 a_message = ""
-boat_speed = 0.5
-enemy_boat_speed = 0.25
+boat_speed = 1
+enemy_boat_speed = 0.75
 cool_down = 0  # the cooldown for between missile fires
-score = 10
+score = 0
 health = 100
 mins = 2
 seconds = 0
@@ -276,18 +276,87 @@ def update_score_text(num_high):
     file = open("all scores.txt","r")
     filedata = file.read()
     if num_high == "":
-        write_text = user_name_text + " - " + score + "\n" + filedata
+        write_text = user_name_text + " - " + str(score) + "\n" + filedata
     else:
         splitdata = filedata.split(num_high)
-        print(splitdata, "old")
+        #print(splitdata, "old")
         ogtext = splitdata[0]
         newtext = ogtext + num_high + "\n" + user_name_text + " - " + str(score)
         splitdata[0] = newtext
-        print(splitdata, "new")
+        #print(splitdata, "new")
         write_text = splitdata[0] + splitdata[1]
     file.close()
 
     return write_text
+
+def update_score_files():
+    #Highscore?
+    written = False
+    filer = open("high score.txt","r")
+    num = ""
+    highscore = False
+    for line in filer:
+        print("line:", line)
+        for letter in line:
+            print("Letter", letter)
+            if letter in numbers:
+                num += letter
+                print(num)
+            fileread = True
+        if int(num) < score and written == False:
+            filer2 = open("high score.txt","r")
+            data = filer2.readline()
+            filer2.close()
+            print("data",data)
+            f = open("high score.txt","w")
+            lineto_write = user_name_text, " - ", str(score)
+            f.writelines(lineto_write)
+            f.close()
+            highscore = True
+            allfile = open("all scores.txt","r")
+            olddata = allfile.read()
+            allfile.close()
+            newdata = data + "\n" + olddata
+            allfile = open("all scores.txt","w")
+            allfile.writelines(newdata)
+            written = True
+            allfile.close()
+
+
+    #Not a High Score
+    if highscore == False:
+        num = ""
+        previous_num = ""
+        scorefile = open("all scores.txt","r")
+        positioned = False
+        #Loops each line in the file
+        for line in scorefile:
+            #loops each letter in the line
+            for letter in line:
+                #if the character is a number it adds to a thing
+                if letter in numbers:
+                    num += letter
+                    print(num)
+
+            #At the end of the line, if the lines number is less than the players score
+            #Checking if the value of num is "" - the end of the document
+            if num == "":
+                file = open("all scores.txt","a")
+                text = user_name_text + " - " + str(score) + "\n"
+                file.writelines(text)
+                file.close()
+            elif int(num) < score and positioned == False:
+                print("New Score")
+                text = update_score_text(previous_num)
+                positioned = True
+                file = open("all scores.txt","w")
+                file.writelines(text)
+                file.close
+        
+            previous_num = num
+            print("previouse num", previous_num)
+            num = ""
+        scorefile.close()
 
 #####################################################################################
 
@@ -606,58 +675,22 @@ def endgame():
     textto_render = ("Your Score: "+ str(score))
     text =current_standard_fnt.render(textto_render,True, current_text_col)
     text_rect = text.get_rect(center = (swidth/2, 450))
-    displaysurf.blit(text, text_rect)
+    displaysurf.blit(text, text_rect)  
 
-    #Highscore?
+    #Displaying high score message if needed
     f = open("high score.txt","r")
     num = ""
-    highscore = False
     for line in f:
         for letter in line:
             if letter in numbers:
                 num += letter
                 #print(num)
         if int(num) < score:
-            highscore = True
             text =current_standard_fnt.render("New High Score",True, txt_error_col)
             text_rect = text.get_rect(center = (swidth/2, 500))
             displaysurf.blit(text, text_rect)
-            f.close()
-
-            f = open("high score.txt","w")
-            lineto_write = user_name_text, " - ", str(score)
-            f.writelines(lineto_write)
-            f.close()
-
-    #Not a High Score
-    if highscore == False:
-        num = ""
-        previous_num = ""
-        scorefile = open("all scores.txt","r")
-        positioned = False
-        #Loops each line in the file
-        for line in scorefile:
-            #loops each letter in the line
-            for letter in line:
-                #if the character is a number it adds to a thing
-                if letter in numbers:
-                    num += letter
-                    print(num)
-
-            #At the end of the line, if the lines number is less than the players score
-            if int(num) < score and positioned == False:
-                print("New Score")
-                text = update_score_text(previous_num)
-                positioned = True
-                scorefile.close()
-                file = open("all scores.txt","w")
-                file.writelines(text)
-                file.close
-
-            previous_num = num
-            print("previouse num", previous_num)
-            num = ""
-                           
+            
+    f.close()                        
                            
     #Buttons
     for button in end_game_page_buttons:
@@ -667,6 +700,7 @@ def endgame():
             #checks if the button has been clicked on
             if button.clicked() == True:
                 if button.type == 0:
+                   update_score_files()
                    menu = button.action
                    if button.action == "game":
                        mins = 2

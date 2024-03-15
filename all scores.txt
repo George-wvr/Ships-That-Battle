@@ -1,6 +1,3 @@
-Mary - 255
-Steve - 240
-Susan - 215
-Max - 210
-George - 10
-Mary - 2
+elijah - 140
+George - 120
+
