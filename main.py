@@ -10,7 +10,7 @@ import math
 pygame.init()
 
 #variables and constants
-menu = "start" #so that the start menu loads on start up
+menu = "game" #so that the start menu loads on start up
 user_name_text = "g"
 user_age_input = "55"
 active_box = None
@@ -38,7 +38,7 @@ ship_sink = pygame.mixer.Sound("ship_sink.wav")
 thump = pygame.mixer.Sound("thump.wav")
 
 # Play the music:
-mixer.music.play(-1)
+#mixer.music.play(-1)
 
 ######################################################################################
 
@@ -875,7 +875,7 @@ class Eboat(pygame.sprite.Sprite):
 
     def draw(self):
         distance = math.sqrt(((player_boat.x - self.x)**2)+((player_boat.y - self.y)**2))
-        self.move()
+        #self.move()
         self.boat.fill(self.colour)
         displaysurf.blit(self.boat, self.rect)
 
@@ -1181,16 +1181,21 @@ allsprites.add(island1, island2, island3, island4, island5, island6, island7)
 enemies = pygame.sprite.Group()
 enemies.add(enemy_boat1, enemy_boat2)
 
-node0 = Node(200, 300, 0)
-node1 = Node(250, 100, 1)
-node2 = Node(400, 220, 2)
-node3 = Node(500, 500, 3)
-node4 = Node(550, 200, 4)
-node5 = Node(675, 300, 5)
-node6 = Node(750, 200, 6)
+node0 = Node(300, 100, 0)
+node1 = Node(300, 218, 1)
+node2 = Node(300, 400, 2)
+node3 = Node(300, 530, 3)
+node4 = Node(500, 218, 4)
+node5 = Node(550, 400, 5)
+node6 = Node(600, 300, 6)
+node7 = Node(600, 530, 7)
+node8 = Node(900, 530, 8)
+node9 = Node(675, 220, 9)
+node10 = Node(675, 70, 10)
+node11 = Node(500, 70, 11)
 
 nodes = pygame.sprite.Group()
-nodes.add(node0,node1,node2,node3,node4,node5,node6)
+nodes.add(node0,node1,node2,node3,node4,node5,node6,node7,node8,node9,node10,node11)
 
 ############################# FUNCTIONS FOR THE GAME##################################
 ############################ GENERAL LAYOUT OF SCREEN ################################
