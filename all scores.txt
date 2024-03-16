@@ -1,9 +1,8 @@
-Adil - 60
-g - 20
+George - 255
+George - 245
+g - 200
+g - 195
+George - 190
 elijah - 140
 George - 120
-
-g - 5
-g - 0
-g - 20
 Adil - 60

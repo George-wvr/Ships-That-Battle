@@ -10,9 +10,9 @@ import math
 pygame.init()
 
 #variables and constants
-menu = "game" #so that the start menu loads on start up
-user_name_text = "g"
-user_age_input = "55"
+menu = "start" #so that the start menu loads on start up
+user_name_text = ""
+user_age_input = ""
 active_box = None
 invalid_inputs = [None, "\b", "\n", "\t", "\r", "^[", '"', "#"]
 n_message = ""
@@ -26,6 +26,27 @@ mins = 2
 seconds = 0
 frame_count = 0
 
+graph = {
+    0:{1:118},
+    1:{0:118, 2:182, 4:200},
+    2:{1:182, 3:130, 5:250},
+    3:{2:130, 7:300},
+    4:{1:200, 6:143, 9:175, 11:148},
+    5:{2:250, 6:94, 7:139},
+    6:{4:143, 5:94, 9:125, 17:150},
+    7:{3:300, 5:139, 8:300},
+    8:{7:300, 16:198},
+    9:{4:175, 6:125, 10:150},
+    10:{9:150, 13:225, 11:175},
+    11:{4:148, 10:175},
+    12:{17:150, 13:250, 15:251, 16:170},
+    13:{10:225, 12:250, 14:200},
+    14:{13:200, 15:235},
+    15:{12:251, 14:235, 16:141},
+    16:{8:198, 12:170, 15:141},
+    17:{6:150, 12:150}
+    }
+
 ######################################################################################
 #Importing music and audio
 #This is the background audio which will repeat
@@ -38,7 +59,7 @@ ship_sink = pygame.mixer.Sound("ship_sink.wav")
 thump = pygame.mixer.Sound("thump.wav")
 
 # Play the music:
-#mixer.music.play(-1)
+mixer.music.play(-1)
 
 ######################################################################################
 
@@ -296,18 +317,18 @@ def update_score_files():
     num = ""
     highscore = False
     for line in filer:
-        print("line:", line)
+        #print("line:", line)
         for letter in line:
-            print("Letter", letter)
+            #print("Letter", letter)
             if letter in numbers:
                 num += letter
-                print(num)
+                #print(num)
             fileread = True
         if int(num) < score and written == False:
             filer2 = open("high score.txt","r")
             data = filer2.readline()
             filer2.close()
-            print("data",data)
+            #print("data",data)
             f = open("high score.txt","w")
             lineto_write = user_name_text, " - ", str(score)
             f.writelines(lineto_write)
@@ -336,7 +357,7 @@ def update_score_files():
                 #if the character is a number it adds to a thing
                 if letter in numbers:
                     num += letter
-                    print(num)
+                    #print(num)
 
             #At the end of the line, if the lines number is less than the players score
             #Checking if the value of num is "" - the end of the document
@@ -346,7 +367,7 @@ def update_score_files():
                 file.writelines(text)
                 file.close()
             elif int(num) < score and positioned == False:
-                print("New Score")
+                #print("New Score")
                 text = update_score_text(previous_num)
                 positioned = True
                 file = open("all scores.txt","w")
@@ -354,20 +375,24 @@ def update_score_files():
                 file.close
         
             previous_num = num
-            print("previouse num", previous_num)
+            #print("previouse num", previous_num)
             num = ""
         scorefile.close()
 
 ################################### RESET GAME ##################################################
 
 def reset_game():
-    global score, health, mins, seconds, enemy_boat1
+    global score, health, mins, seconds, enemy_boat1, enemy_boat2
     score = 0
     health = 100
     mins = 2
     seconds = 0
     enemy_boat1.goto(300, 100)
-    enemy_boat2.goto(300, 500)
+    enemy_boat2.goto(1000, 100)
+    enemy_boat1.health = 6
+    enemy_boat2.health = 6
+    enemy_boat1.colour = (22, 224, 25)
+    enemy_boat2.colour = (22, 224, 25)
 ###############################################################################################
 #Menus
 #Start Menu
@@ -726,6 +751,7 @@ def run_game():
     global score
     global seconds
     global menu
+    global graph
 
     layout(displaysurf)
     #for island in all_islands:
@@ -738,6 +764,26 @@ def run_game():
     #Drawing all the sprites in one go
     for thing in allsprites:
         thing.draw()
+        graph = {
+    0:{1:118},
+    1:{0:118, 2:182, 4:200},
+    2:{1:182, 3:130, 5:250},
+    3:{2:130, 7:300},
+    4:{1:200, 6:143, 9:175, 11:148},
+    5:{2:250, 6:94, 7:139},
+    6:{4:143, 5:94, 9:125, 17:150},
+    7:{3:300, 5:139, 8:300},
+    8:{7:300, 16:198},
+    9:{4:175, 6:125, 10:150},
+    10:{9:150, 13:225, 11:175},
+    11:{4:148, 10:175},
+    12:{17:150, 13:250, 15:251, 16:170},
+    13:{10:225, 12:250, 14:200},
+    14:{13:200, 15:235},
+    15:{12:251, 14:235, 16:141},
+    16:{8:198, 12:170, 15:141},
+    17:{6:150, 12:150}
+    }
 
     #Player Collision with the islands
     if pygame.sprite.spritecollideany(player_boat, islands):
@@ -791,8 +837,8 @@ def run_game():
         time_penalty()
         player_boat.goto(swidth - 75, sheight - 50)
 
-    for node in nodes:
-        node.draw()
+    #for node in nodes:
+        #node.draw()
 
     if cool_down > 0:
         cool_down -= 1
@@ -864,6 +910,8 @@ class Eboat(pygame.sprite.Sprite):
         self.x_offset = 0
         self.y_offset = 0
         self.colour = (22, 224, 25)
+        self.health = 6
+        self.randomnode = 0
         self.boat = pygame.Surface((self.width, self.height))
         self.get_rectgl()
         self.cooldown = 0
@@ -875,29 +923,40 @@ class Eboat(pygame.sprite.Sprite):
 
     def draw(self):
         distance = math.sqrt(((player_boat.x - self.x)**2)+((player_boat.y - self.y)**2))
-        #self.move()
+        self.move()
         self.boat.fill(self.colour)
         displaysurf.blit(self.boat, self.rect)
 
         #print(self.x, self.y)
 
     def move(self):
-        targetnode = self.target_node()
-        #print("Target:",targetnode.id)
+        global player_boat
         currentnode = self.current_node()
-        #print("Current:",currentnode.id)
-        #print(graph)
+        #Distance to player
+        player_dist = math.sqrt(((player_boat.x - self.x)**2) + ((player_boat.y - self.y)**2))
+        if player_dist < 250:
+            targetnode = self.target_node()
+
+        elif self.randomnode == currentnode or self.randomnode == 0:
+            randomnum = random.randint(0,16)
+            self.randomnode = self.get_node(randomnum)
+            targetnode = self.randomnode
+
+        else:
+            targetnode = self.randomnode
+        
+
         path = self.path(targetnode.id, currentnode.id, graph)
         nextnode = self.get_node(path[0])
-        #print("nextnode",nextnode.id)
+        print("nextnode",nextnode.id)
         if self.x < nextnode.x:
-            self.x+=1
+            self.x+=enemy_boat_speed
         if self.x > nextnode.x:
-            self.x-=1
+            self.x-=enemy_boat_speed
         if self.y < nextnode.y:
-            self.y+=1
+            self.y+=enemy_boat_speed
         if self.y > nextnode.y:
-            self.y-=1
+            self.y-=enemy_boat_speed
 
         self.get_rectgl()
         displaysurf.blit(self.boat, self.rect)
@@ -933,6 +992,7 @@ class Eboat(pygame.sprite.Sprite):
                 smallestdis = distances[i]
                 closenode = i
 
+        #print(closenode)
         return self.get_node(closenode)
     
     def current_node(self):
@@ -961,7 +1021,7 @@ class Eboat(pygame.sprite.Sprite):
                 smallestdis = distances[i]
                 closenode = i
 
-        print(closenode)
+        #print(closenode)
 
         return self.get_node(closenode)
 
@@ -1007,19 +1067,19 @@ class Eboat(pygame.sprite.Sprite):
 
             graph.pop(shortest)
             #print(graph)
-        print("Exited loop")
+        #print("Exited loop")
 
         shortest_path = [targetnode]
         location = targetnode
         while location != currentnode:
-            print(location)
+            #print("location",location)
             toadd = previouse_node[location]
-            print(toadd)
-            shortest_path.append(toadd)
+            shortest_path.insert(0,toadd)
             location = toadd
+        shortest_path.reverse()
         if len(shortest_path) > 1:
             shortest_path.pop(0)
-        print(shortest_path)
+        print("Shorest path:", shortest_path)    
         return shortest_path 
         
     def get_node(self, id):
@@ -1037,24 +1097,48 @@ class Eboat(pygame.sprite.Sprite):
             return node5
         elif id == 6:
             return node6
+        elif id == 7:
+            return node7
+        elif id == 8:
+            return node8
+        elif id == 9:
+            return node9
+        elif id == 10:
+            return node10
+        elif id == 11:
+            return node11
+        elif id == 12:
+            return node12
+        elif id == 13:
+            return node13
+        elif id == 14:
+            return node14
+        elif id == 15:
+            return node15
+        elif id == 16:
+            return node16
+        elif id == 17:
+            return node17
         else:
             return node0
 
     def hit(self):
         global score
         sound = 1
-        if self.colour == (22, 224, 25):
+        self.health -= 1
+        if self.health == 5:
             self.colour = (113, 224, 22)
-        elif self.colour == (113, 224, 22):
+        elif self.health == 4:
             self.colour = (170, 224, 22)
-        elif self.colour == (170, 224, 22):
+        elif self.health == 3:
             self.colour = (224, 211, 22)
-        elif self.colour == (224, 211, 22):
+        elif self.health == 2:
             self.colour = (224, 110, 22)
-        elif self.colour == (224, 110, 22):
+        elif self.health == 1:
             self.colour = (224, 22, 22)
-        elif self.colour == (224, 22, 22):
+        elif self.health == 0:
             print("Sink")
+            self.sink()
             sound = 2
         if sound == 1:
             pygame.mixer.Sound.play(wood_crash)
@@ -1070,8 +1154,14 @@ class Eboat(pygame.sprite.Sprite):
             enemy_bombs.append(Bomb(self.x, self.y, player_boat.x, player_boat.y, 1))
             self.cooldown = 100
             pygame.mixer.Sound.play(cannon_sound)
+
+    def sink(self):
+        self.goto(1000,1000)
+        self.health = 6
+        self.colour = (22, 224, 25)
+
 enemy_boat1 = Eboat(300, 100)
-enemy_boat2 = Eboat(300, 500)
+enemy_boat2 = Eboat(1000, 100)
 
 ###################################### BOMBS ########################################
 class Bomb:
@@ -1187,15 +1277,21 @@ node2 = Node(300, 400, 2)
 node3 = Node(300, 530, 3)
 node4 = Node(500, 218, 4)
 node5 = Node(550, 400, 5)
-node6 = Node(600, 300, 6)
+node6 = Node(600, 320, 6)
 node7 = Node(600, 530, 7)
 node8 = Node(900, 530, 8)
 node9 = Node(675, 220, 9)
 node10 = Node(675, 70, 10)
 node11 = Node(500, 70, 11)
+node12 = Node(900, 320, 12)
+node13 = Node(900, 70, 13)
+node14 = Node(1100, 70, 14)
+node15 = Node(1150, 300, 15)
+node16 = Node(1050, 400, 16)
+node17 = Node(750, 320, 17)
 
 nodes = pygame.sprite.Group()
-nodes.add(node0,node1,node2,node3,node4,node5,node6,node7,node8,node9,node10,node11)
+nodes.add(node0,node1,node2,node3,node4,node5,node6,node7,node8,node9,node10,node11,node12,node13,node14,node15,node16,node17)
 
 ############################# FUNCTIONS FOR THE GAME##################################
 ############################ GENERAL LAYOUT OF SCREEN ################################
@@ -1308,16 +1404,6 @@ while True:
         #assigns the letter press to a variable
         if event.type == KEYDOWN:
             event_key_pressed = event.unicode
-
-    graph = {
-    0:{1:2, 2:2, 3:4},
-    1:{0:2, 2:2, 3:6, 4:3},
-    2:{0:2, 1:2, 4:1},
-    3:{0:4, 1:6, 5:3},
-    4:{1:3, 2:1, 5:2, 6:2},
-    5:{3:3, 4:2, 6:1},
-    6:{4:2, 5:1}
-    }
 
     if menu == "start":
         main_menu()
