@@ -10,10 +10,11 @@ import math
 pygame.init()
 
 #variables and constants
-menu = "start" #so that the start menu loads on start up
+menu = "game" #so that the start menu loads on start up
+previous_menu = "start"
 
-user_name_text = ""
-user_age_input = ""
+user_name_text = "ADMIN"
+user_age_input = "100"
 active_box = None
 invalid_inputs = [None, "\b", "\n", "\t", "\r", "^[", '"', "#"]
 n_message = ""
@@ -74,6 +75,8 @@ screen_default = (88, 155, 213)
 screen_alt = (0, 32, 96)
 current_screen_col = screen_default
 
+game_defult = (128, 128, 128)
+
 txt_default = (0,0,0)
 txt_alt = (255, 255, 255)
 txt_error_col = (255, 0, 0)
@@ -89,7 +92,6 @@ black = (0, 0, 0)
 caution_col = (255, 0, 0)
 dock_col = (69, 89, 105)
 boat_e_col = (167, 102, 173)
-menu_col = (128, 128, 128)
 game_box_col = (175, 171, 171)
 
 #Fonts:
@@ -122,7 +124,11 @@ def scheme_change(change):
         current_standard_fnt = fnt_standard_alt
 
 #Changing the current colours when the game starts
-#def set_game_screen_colours():
+def toggle_colours_gameandmenu():
+    if current_screen_col == screen_default:
+        current_screen_col = game_defult
+    elif current_screen_col == game_defult:
+        current_screen_col = screen_default
 
 
 #Functions to render text
@@ -213,7 +219,7 @@ class Button():
 #Buttons
 #Format: x_pos, y_pos, width, height, colourchange, fontchange, text to display, type, action
 #colour/font changes: 0 = same as current theme, 1 = always default, 2 = always alt
-#Type defines if the button leads to a menu change (0) or a colour/font change (1) or run a function (2)
+#Type defines if the button leads to a menu change (0) or a colour/font change (1) or run a function (2) store the current menu, but goes to the action menu (3) or goes to the previous stored node (4)
 
 #General buttons
 home_btn = Button(10, 10, 200, 50, 0, 0, "Home", 0, "start")
@@ -222,7 +228,7 @@ home_btn = Button(10, 10, 200, 50, 0, 0, "Home", 0, "start")
 start_btn = Button(50, 200, 200, 50, 0, 0, "Start Game", 0, "validation")
 how_play_btn = Button(50, 250, 200, 50, 0, 0, "How to play", 0, "how_play")
 h_score_btn = Button(50, 300, 200, 50, 0, 0, "Highscores", 0, "scores")
-settings_btn = Button(50, 350, 200, 50, 0, 0, "Settings", 0, "start")
+settings_btn = Button(50, 350, 200, 50, 0, 0, "Settings", 3, "settings")
 quit_game_btn = Button(50, 400, 200, 50, 0, 0, "Quit game", 0, "quit")
 toggle_sounds = Button(50, 500, 220, 50, 0, 0, "Toggle Music", 2, "t_music")
 colour1_btn = Button(1000, 200, 155, 50, 1, 0, "Colour 1", 1, "col1")
@@ -249,13 +255,33 @@ quit_page_buttons = [yes_btn, no_btn, home_btn]
 #Game Screen
 toggle_music_game = Button(25, 350, 220, 50, 0, 0, "Toggle Music", 2, "t_music")
 toggle_sound_e_game = Button(25, 400, 230, 50, 0, 0, "Toggle Effects", 2, "t_sound")
-game_screen_buttons = [toggle_music_game, toggle_sound_e_game]
+pause_btn = Button(25, 475, 200, 50, 0, 0, "Pause", 0, "pause")
+game_screen_buttons = [toggle_music_game, toggle_sound_e_game, pause_btn]
 
 #End Game
 h_score_btn2 = Button(175, 300, 350, 50, 0, 0, "Leader Board", 0, "scores")
 returnto_main = Button(525, 300, 200, 50, 0, 0, "Main Menu", 0, "start")
 play_again = Button(825, 300, 200, 50, 0, 0, "Play Again", 0, "game")
 end_game_page_buttons = [h_score_btn2, returnto_main, play_again]
+
+#pause screen
+resumegame_btn = Button(500, 300, 300, 50, 0, 0, "Resume Game", 0, "game")
+settings_btn_2 = Button(175, 300, 200, 50, 0, 0, "Settings", 3, "settings")
+endround_btn = Button(900, 300, 200, 50, 0, 0, "End Round", 0, "endround")
+
+pausescreen_buttons = [resumegame_btn, settings_btn_2, endround_btn]
+
+#endround
+yes_btn2 = Button(400, 275, 200, 50, 0, 0, "Yes", 0, "start")
+no_btn2 = Button(700, 275, 200, 50, 0, 0, "No", 0, "pause")
+endround_buttons = [yes_btn2, no_btn2]
+
+#Settings screen
+return_btn = Button(10, 10, 200, 50, 0, 0, "Return", 4, "")
+settings_btn_2 = Button(175, 300, 200, 50, 0, 0, "Settings", 0, "settings")
+endround_btn = Button(900, 300, 200, 50, 0, 0, "End Round", 0, "endround")
+
+settingsmenu_buttons = [return_btn, colour1_btn, colour2_btn, font1_btn, font2_btn]
 
 #################################################### MENU FUNCTIONS #######################################################
 
@@ -461,6 +487,9 @@ def main_menu():
                 elif button.type == 2:
                     if button.action == "t_music":
                         toggle_music()
+                elif button.type == 3:
+                    previous_menu = menu
+                    menu = button.action
 #########################################################################################
 #Validation page
 def validation_page():
@@ -545,6 +574,7 @@ def validation_page():
                     if button.action == "game":
                         print("Reset")
                         reset_game()
+                        toggle_colours_gameandmenu()
                 elif button.type == 2:
                     submit = True
 
@@ -580,6 +610,7 @@ def validation_page():
         if play_game == True:
             # To do
             menu = "game"
+            reset_game()
             mins = 2
             seconds = 0
 
@@ -788,8 +819,96 @@ def endgame():
                    menu = button.action
                    if button.action == "game":
                         reset_game()
+                        toggle_colours_gameandmenu()
                 elif button.type == 1:
                     scheme_change(button.action)
+
+###################################### PAUSE ########################################
+
+def pause():
+    global menu, previous_menu
+
+    text =current_title_fnt.render("Ships That Battle",True, current_text_col)
+    text_rect = text.get_rect(center = (swidth/2, 35))
+    displaysurf.blit(text, text_rect)
+    text =current_title_fnt.render("Game Paused",True, current_text_col)
+    text_rect = text.get_rect(center = (swidth/2, 150))
+    displaysurf.blit(text, text_rect)
+
+    #Displying current Score
+    textto_render = ("Your Current Score: "+ str(score))
+    text =current_standard_fnt.render(textto_render,True, current_text_col)
+    text_rect = text.get_rect(center = (swidth/2, 550))
+    displaysurf.blit(text, text_rect) 
+
+    #Buttons
+    for button in pausescreen_buttons:
+        button.draw()
+        #checks if the mouse is over the button
+        if button.hover() == True:
+            #checks if the button has been clicked on
+            if button.clicked() == True:
+                if button.type == 0:
+                    menu = button.action
+                elif button.type == 3:
+                    previous_menu = menu
+                    menu = button.action
+
+################################## SETTINGS ########################################
+                    
+def settings():
+    global menu
+
+    text =current_title_fnt.render("Ships That Battle",True, current_text_col)
+    text_rect = text.get_rect(center = (swidth/2, 35))
+    displaysurf.blit(text, text_rect)
+    text =current_title_fnt.render("Settings",True, current_text_col)
+    text_rect = text.get_rect(center = (swidth/2, 150))
+    displaysurf.blit(text, text_rect)
+
+    #Buttons
+    for button in settingsmenu_buttons:
+        button.draw()
+        #checks if the mouse is over the button
+        if button.hover() == True:
+            #checks if the button has been clicked on
+            if button.clicked() == True:
+                if button.type == 0:
+                    menu = button.action
+                elif button.type == 1:
+                    scheme_change(button.action)
+                elif button.type == 2:
+                    if button.action == "t_music":
+                        toggle_music()
+                elif button.type == 4:
+                    menu = previous_menu
+                    print(previous_menu)
+
+def endround():
+    global menu
+
+    text =current_title_fnt.render("Ships That Battle",True, current_text_col)
+    text_rect = text.get_rect(center = (swidth/2, 35))
+    displaysurf.blit(text, text_rect)
+    text =current_title_fnt.render("Are you sure you want to end the round?",True, current_text_col)
+    text_rect = text.get_rect(center = (swidth/2, 150))
+    displaysurf.blit(text, text_rect)
+    text =current_standard_fnt.render("Your progress in the round will be lost",True, current_text_col)
+    text_rect = text.get_rect(center = (swidth/2, 200))
+    displaysurf.blit(text, text_rect)
+
+    #Buttons
+    for button in endround_buttons:
+        button.draw()
+        #checks if the mouse is over the button
+        if button.hover() == True:
+            #checks if the button has been clicked on
+            if button.clicked() == True:
+                if button.type == 0:
+                    menu = button.action
+
+
+
 
 ################################## GAME FUNCTION #####################################
 
@@ -842,12 +961,13 @@ def run_game():
         player_boat.goto(swidth - 75, sheight - 50)
 
     #Shooting player missiles
-    if event.type == pygame.MOUSEBUTTONDOWN:
+    mouse_x, mouse_y = pygame.mouse.get_pos()
+    if event.type == pygame.MOUSEBUTTONDOWN and mouse_x > 275: 
+    #Ensures that the mouse is within the gamespace, so that its not shot when clicking buttons
         if event.button == 1 and cool_down <= 0:
             cool_down = 50
             if s_effects == 1:
                 pygame.mixer.Sound.play(cannon_sound)
-            mouse_x, mouse_y = pygame.mouse.get_pos()
             # Adds a new instance of the bomb to the list
             player_bombs.append(Bomb(player_boat.x, player_boat.y, mouse_x, mouse_y, 0))
 
@@ -888,8 +1008,8 @@ def run_game():
         time_penalty()
         player_boat.goto(swidth - 75, sheight - 50)
 
-    #for node in nodes:
-        #node.draw()
+    for node in nodes:
+        node.draw()
 
     if cool_down > 0:
         cool_down -= 1
@@ -1343,12 +1463,12 @@ allsprites.add(island1, island2, island3, island4, island5, island6, island7)
 enemies = pygame.sprite.Group()
 enemies.add(enemy_boat1, enemy_boat2)
 
-node0 = Node(300, 100, 0)
-node1 = Node(300, 218, 1)
-node2 = Node(300, 400, 2)
-node3 = Node(300, 530, 3)
-node4 = Node(500, 218, 4)
-node5 = Node(550, 400, 5)
+node0 = Node(300, 50, 0)
+node1 = Node(300, 125, 1)
+node2 = Node(300, 185, 2)
+node3 = Node(300, 218, 3)
+node4 = Node(300, 290, 4)
+node5 = Node(300, 340, 5)
 node6 = Node(600, 320, 6)
 node7 = Node(600, 530, 7)
 node8 = Node(900, 530, 8)
@@ -1369,7 +1489,7 @@ nodes.add(node0,node1,node2,node3,node4,node5,node6,node7,node8,node9,node10,nod
 ############################ GENERAL LAYOUT OF SCREEN ################################
 
 def layout(displaysurf):
-    displaysurf.fill(menu_col)
+    displaysurf.fill(current_screen_col)
 
     #Information boxes
     box = pygame.Surface((225,50))
@@ -1499,6 +1619,9 @@ while True:
     if menu == "scores":
         scores()
 
+    if menu == "settings":
+        settings()
+
     if menu == "quit":
         quitgame()
 
@@ -1511,6 +1634,12 @@ while True:
 
     if menu == "endgame":
         endgame()
+    
+    if menu == "pause":
+        pause()
+
+    if menu == "endround":
+        endround()
 
     pygame.display.update()
     pygame.display.flip()
