@@ -11,20 +11,29 @@ pygame.init()
 
 #variables and constants
 menu = "start" #so that the start menu loads on start up
+
 user_name_text = ""
 user_age_input = ""
 active_box = None
 invalid_inputs = [None, "\b", "\n", "\t", "\r", "^[", '"', "#"]
 n_message = ""
 a_message = ""
+
 boat_speed = 1
 enemy_boat_speed = 0.75
 cool_down = 0  # the cooldown for between missile fires
 score = 0
 health = 100
+
 mins = 2
 seconds = 0
 frame_count = 0
+
+music = 1 # 1 is playing, 2 is stopping, 3 is continuing as normal (no changes)
+music_changeto = "play" # Shows what the previous change was to do
+s_effects = 1 # same as for music
+
+m_button_down = False
 
 graph = {
     0:{1:118},
@@ -50,16 +59,13 @@ graph = {
 ######################################################################################
 #Importing music and audio
 #This is the background audio which will repeat
-mixer.music.load("background.mp3")
+mixer.music.load("background.wav")
 #These are the sound effects that will play over the top of the background music
 cannon_sound = pygame.mixer.Sound("cannon2.wav")
 wood_crash = pygame.mixer.Sound("wood_hit.wav")
 water_splosh = pygame.mixer.Sound("water_splosh.wav")
 ship_sink = pygame.mixer.Sound("ship_sink.wav")
 thump = pygame.mixer.Sound("thump.wav")
-
-# Play the music:
-mixer.music.play(-1)
 
 ######################################################################################
 
@@ -114,6 +120,10 @@ def scheme_change(change):
     elif change == "fnt2":
         current_title_fnt = fnt_title_alt
         current_standard_fnt = fnt_standard_alt
+
+#Changing the current colours when the game starts
+#def set_game_screen_colours():
+
 
 #Functions to render text
 #Title text, current scheme
@@ -193,7 +203,11 @@ class Button():
             return True
 
     def clicked(self):
-        if event.type == pygame.MOUSEBUTTONUP and self.hover() == True:
+        global m_button_down
+        if event.type == pygame.MOUSEBUTTONDOWN and self.hover() == True:
+            m_button_down = True
+        if m_button_down == True and event.type == pygame.MOUSEBUTTONUP:
+            m_button_down = False
             return True
 
 #Buttons
@@ -210,11 +224,12 @@ how_play_btn = Button(50, 250, 200, 50, 0, 0, "How to play", 0, "how_play")
 h_score_btn = Button(50, 300, 200, 50, 0, 0, "Highscores", 0, "scores")
 settings_btn = Button(50, 350, 200, 50, 0, 0, "Settings", 0, "start")
 quit_game_btn = Button(50, 400, 200, 50, 0, 0, "Quit game", 0, "quit")
+toggle_sounds = Button(50, 500, 220, 50, 0, 0, "Toggle Music", 2, "t_music")
 colour1_btn = Button(1000, 200, 155, 50, 1, 0, "Colour 1", 1, "col1")
 colour2_btn = Button(1000, 275, 155, 50, 2, 0, "Colour 2", 1, "col2")
 font1_btn = Button(1000, 350, 155, 50, 0, 1, " Font 1", 1, "fnt1")
 font2_btn = Button(1000, 425, 155, 50, 0, 2, " Font 2", 1, "fnt2")
-start_buttons = [start_btn, how_play_btn, h_score_btn, settings_btn, quit_game_btn, colour1_btn, colour2_btn, font1_btn, font2_btn]
+start_buttons = [start_btn, how_play_btn, h_score_btn, settings_btn, quit_game_btn, toggle_sounds, colour1_btn, colour2_btn, font1_btn, font2_btn]
 
 #Validation page
 submit_btn = Button(575, 550, 200, 50, 0, 0, "Start Game", 2, "validate")
@@ -231,13 +246,18 @@ yes_btn = Button(400, 275, 200, 50, 0, 0, "Yes", 0, "leave_game")
 no_btn = Button(700, 275, 200, 50, 0, 0, "No", 0, "start")
 quit_page_buttons = [yes_btn, no_btn, home_btn]
 
+#Game Screen
+toggle_music_game = Button(25, 350, 220, 50, 0, 0, "Toggle Music", 2, "t_music")
+toggle_sound_e_game = Button(25, 400, 230, 50, 0, 0, "Toggle Effects", 2, "t_sound")
+game_screen_buttons = [toggle_music_game, toggle_sound_e_game]
+
 #End Game
 h_score_btn2 = Button(175, 300, 350, 50, 0, 0, "Leader Board", 0, "scores")
 returnto_main = Button(525, 300, 200, 50, 0, 0, "Main Menu", 0, "start")
 play_again = Button(825, 300, 200, 50, 0, 0, "Play Again", 0, "game")
 end_game_page_buttons = [h_score_btn2, returnto_main, play_again]
 
-#########################################################################################
+#################################################### MENU FUNCTIONS #######################################################
 
 #Validation functions
 numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
@@ -290,7 +310,7 @@ def submit_validate(name_text, age_text):
         return True
     else:
         return False
-    
+
 ################################## UPDATING SCORE TXT FILE ######################################
 
 def update_score_text(num_high):
@@ -373,27 +393,51 @@ def update_score_files():
                 file = open("all scores.txt","w")
                 file.writelines(text)
                 file.close
-        
+
             previous_num = num
             #print("previouse num", previous_num)
             num = ""
         scorefile.close()
 
-################################### RESET GAME ##################################################
+############################################## RESET GAME ##################################################
 
 def reset_game():
-    global score, health, mins, seconds, enemy_boat1, enemy_boat2
+    global score, health, mins, seconds, enemy_boat1, enemy_boat2, player_boat
     score = 0
     health = 100
     mins = 2
     seconds = 0
+    player_boat.goto(1175, 500)
     enemy_boat1.goto(300, 100)
     enemy_boat2.goto(1000, 100)
     enemy_boat1.health = 6
     enemy_boat2.health = 6
     enemy_boat1.colour = (22, 224, 25)
     enemy_boat2.colour = (22, 224, 25)
-###############################################################################################
+
+################################################ TOGLLE MUSIC #####################################################
+def toggle_music():
+    global music, music_changeto
+    if music_changeto == "play":
+        #print("toggle music to stop")
+        music = 2
+        music_changeto = "stop"
+    elif music_changeto == "stop":
+        #("Toggle music to play")
+        music = 1
+        music_changeto = "play"
+
+def toggle_sound():
+    global s_effects
+    #flips the value of the sound effect variable
+    if s_effects == 1:
+        s_effects = 2
+    elif s_effects == 2:
+        s_effects = 1
+    
+
+
+#################################################### MENUS ########################################################
 #Menus
 #Start Menu
 def main_menu():
@@ -414,6 +458,9 @@ def main_menu():
                     menu = button.action
                 elif button.type == 1:
                     scheme_change(button.action)
+                elif button.type == 2:
+                    if button.action == "t_music":
+                        toggle_music()
 #########################################################################################
 #Validation page
 def validation_page():
@@ -496,6 +543,7 @@ def validation_page():
                 if button.type == 0:
                     menu = button.action
                     if button.action == "game":
+                        print("Reset")
                         reset_game()
                 elif button.type == 2:
                     submit = True
@@ -725,9 +773,9 @@ def endgame():
             text =current_standard_fnt.render("New High Score",True, txt_error_col)
             text_rect = text.get_rect(center = (swidth/2, 500))
             displaysurf.blit(text, text_rect)
-            
+
     f.close()                        
-                           
+
     #Buttons
     for button in end_game_page_buttons:
         button.draw()
@@ -797,7 +845,8 @@ def run_game():
     if event.type == pygame.MOUSEBUTTONDOWN:
         if event.button == 1 and cool_down <= 0:
             cool_down = 50
-            pygame.mixer.Sound.play(cannon_sound)
+            if s_effects == 1:
+                pygame.mixer.Sound.play(cannon_sound)
             mouse_x, mouse_y = pygame.mouse.get_pos()
             # Adds a new instance of the bomb to the list
             player_bombs.append(Bomb(player_boat.x, player_boat.y, mouse_x, mouse_y, 0))
@@ -808,7 +857,8 @@ def run_game():
         # checks if the bullet colides with an island
         for island in islands:
             if island.rect.collidepoint(bullet.x, bullet.y):
-                pygame.mixer.Sound.play(thump)
+                if s_effects == 1:
+                    pygame.mixer.Sound.play(thump)
                 bullet.set_crash()
 
         # Checks if the Bullet collides with an enemy boat
@@ -824,7 +874,8 @@ def run_game():
         # checks if the bullet colides with an island
         for island in islands:
             if island.rect.collidepoint(bullet.x, bullet.y):
-                pygame.mixer.Sound.play(thump)
+                if s_effects == 1:
+                    pygame.mixer.Sound.play(thump)
                 bullet.set_crash()
 
         #Player Boat collision
@@ -842,6 +893,23 @@ def run_game():
 
     if cool_down > 0:
         cool_down -= 1
+
+    #Loops each button in the start menu
+    for button in game_screen_buttons:
+        button.draw()
+        #checks if the mouse is over the button
+        if button.hover() == True:
+            #checks if the button has been clicked on
+            if button.clicked() == True:
+                if button.type == 0:
+                    menu = button.action
+                elif button.type == 1:
+                    scheme_change(button.action)
+                elif button.type == 2:
+                    if button.action == "t_music":
+                        toggle_music()
+                    elif button.action == "t_sound":
+                        toggle_sound()
 
     update_time()
 
@@ -944,11 +1012,11 @@ class Eboat(pygame.sprite.Sprite):
 
         else:
             targetnode = self.randomnode
-        
+
 
         path = self.path(targetnode.id, currentnode.id, graph)
         nextnode = self.get_node(path[0])
-        print("nextnode",nextnode.id)
+        #print("nextnode",nextnode.id)
         if self.x < nextnode.x:
             self.x+=enemy_boat_speed
         if self.x > nextnode.x:
@@ -994,7 +1062,7 @@ class Eboat(pygame.sprite.Sprite):
 
         #print(closenode)
         return self.get_node(closenode)
-    
+
     def current_node(self):
         distances = []
         for eachnode in nodes:
@@ -1079,9 +1147,9 @@ class Eboat(pygame.sprite.Sprite):
         shortest_path.reverse()
         if len(shortest_path) > 1:
             shortest_path.pop(0)
-        print("Shorest path:", shortest_path)    
-        return shortest_path 
-        
+        #print("Shorest path:", shortest_path)    
+        return shortest_path
+
     def get_node(self, id):
         if id == 0:
             return node0
@@ -1137,13 +1205,15 @@ class Eboat(pygame.sprite.Sprite):
         elif self.health == 1:
             self.colour = (224, 22, 22)
         elif self.health == 0:
-            print("Sink")
+            #print("Sink")
             self.sink()
             sound = 2
         if sound == 1:
-            pygame.mixer.Sound.play(wood_crash)
+            if s_effects == 1:
+                pygame.mixer.Sound.play(wood_crash)
         else:
-            pygame.mixer.Sound.play(ship_sink)
+            if s_effects == 1:
+                pygame.mixer.Sound.play(ship_sink)
             score += 5
 
     def fire(self):
@@ -1153,7 +1223,8 @@ class Eboat(pygame.sprite.Sprite):
         if distance < 75:
             enemy_bombs.append(Bomb(self.x, self.y, player_boat.x, player_boat.y, 1))
             self.cooldown = 100
-            pygame.mixer.Sound.play(cannon_sound)
+            if s_effects == 1:
+                pygame.mixer.Sound.play(cannon_sound)
 
     def sink(self):
         self.goto(1000,1000)
@@ -1193,7 +1264,8 @@ class Bomb:
 
         #Plays audio if the missile 'hits the sea'
         if self.life <= 0:
-            pygame.mixer.Sound.play(water_splosh)
+            if s_effects == 1:
+                pygame.mixer.Sound.play(water_splosh)
 
         # If the missile has collided with something it is moved off of the screen so it cant be collided with again
         if self.crash == True or self.life <= 0:
@@ -1404,6 +1476,16 @@ while True:
         #assigns the letter press to a variable
         if event.type == KEYDOWN:
             event_key_pressed = event.unicode
+
+    if music == 1:
+        #print("Play Music")
+        # Play the music:
+        mixer.music.play(-1)
+        music = 3
+    elif music == 2:
+        #print("stop music")
+        mixer.music.stop()
+        music = 3
 
     if menu == "start":
         main_menu()
