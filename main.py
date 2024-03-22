@@ -460,14 +460,14 @@ def toggle_sound():
         s_effects = 2
     elif s_effects == 2:
         s_effects = 1
-    
+
 
 
 #################################################### MENUS ########################################################
 #Menus
 #Start Menu
 def main_menu():
-    global menu
+    global menu, previous_menu
     #Renders the title words
     text = rendertxt_title_current("Ships That Battle")
     text_rect = text.get_rect(center = (swidth/2, 35))
@@ -574,7 +574,7 @@ def validation_page():
                     if button.action == "game":
                         print("Reset")
                         reset_game()
-                        toggle_colours_gameandmenu()
+                        #toggle_colours_gameandmenu()
                 elif button.type == 2:
                     submit = True
 
@@ -819,7 +819,7 @@ def endgame():
                    menu = button.action
                    if button.action == "game":
                         reset_game()
-                        toggle_colours_gameandmenu()
+                        #toggle_colours_gameandmenu()
                 elif button.type == 1:
                     scheme_change(button.action)
 
@@ -839,7 +839,7 @@ def pause():
     textto_render = ("Your Current Score: "+ str(score))
     text =current_standard_fnt.render(textto_render,True, current_text_col)
     text_rect = text.get_rect(center = (swidth/2, 550))
-    displaysurf.blit(text, text_rect) 
+    displaysurf.blit(text, text_rect)
 
     #Buttons
     for button in pausescreen_buttons:
@@ -855,7 +855,7 @@ def pause():
                     menu = button.action
 
 ################################## SETTINGS ########################################
-                    
+
 def settings():
     global menu
 
@@ -962,7 +962,7 @@ def run_game():
 
     #Shooting player missiles
     mouse_x, mouse_y = pygame.mouse.get_pos()
-    if event.type == pygame.MOUSEBUTTONDOWN and mouse_x > 275: 
+    if event.type == pygame.MOUSEBUTTONDOWN and mouse_x > 275:
     #Ensures that the mouse is within the gamespace, so that its not shot when clicking buttons
         if event.button == 1 and cool_down <= 0:
             cool_down = 50
@@ -1008,8 +1008,8 @@ def run_game():
         time_penalty()
         player_boat.goto(swidth - 75, sheight - 50)
 
-    #for node in nodes:
-        #node.draw()
+    for node in nodes:
+        node.draw()
 
     if cool_down > 0:
         cool_down -= 1
@@ -1463,17 +1463,17 @@ allsprites.add(island1, island2, island3, island4, island5, island6, island7)
 enemies = pygame.sprite.Group()
 enemies.add(enemy_boat1, enemy_boat2)
 
-node0 = Node(300, 100, 0)
-node1 = Node(300, 218, 1)
-node2 = Node(300, 400, 2)
-node3 = Node(300, 530, 3)
-node4 = Node(500, 218, 4)
-node5 = Node(550, 400, 5)
-node6 = Node(600, 320, 6)
-node7 = Node(600, 530, 7)
-node8 = Node(900, 530, 8)
-node9 = Node(675, 220, 9)
-node10 = Node(675, 70, 10)
+node0 = Node(300, 50, 0)
+node1 = Node(300, 125, 1)
+node2 = Node(300, 185, 2)
+node3 = Node(300, 218, 3)
+node4 = Node(300, 290, 4)
+node5 = Node(300, 340, 5)
+node6 = Node(300, 390, 6)
+node7 = Node(300, 530, 7)
+node8 = Node(365, 225, 8)
+node9 = Node(450, 225, 9)
+node10 = Node(440, 390, 10)
 node11 = Node(500, 70, 11)
 node12 = Node(900, 320, 12)
 node13 = Node(900, 70, 13)
@@ -1634,7 +1634,7 @@ while True:
 
     if menu == "endgame":
         endgame()
-    
+
     if menu == "pause":
         pause()
 
