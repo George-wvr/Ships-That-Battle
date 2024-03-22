@@ -1008,8 +1008,8 @@ def run_game():
         time_penalty()
         player_boat.goto(swidth - 75, sheight - 50)
 
-    for node in nodes:
-        node.draw()
+    #for node in nodes:
+        #node.draw()
 
     if cool_down > 0:
         cool_down -= 1
@@ -1463,12 +1463,12 @@ allsprites.add(island1, island2, island3, island4, island5, island6, island7)
 enemies = pygame.sprite.Group()
 enemies.add(enemy_boat1, enemy_boat2)
 
-node0 = Node(300, 50, 0)
-node1 = Node(300, 125, 1)
-node2 = Node(300, 185, 2)
-node3 = Node(300, 218, 3)
-node4 = Node(300, 290, 4)
-node5 = Node(300, 340, 5)
+node0 = Node(300, 100, 0)
+node1 = Node(300, 218, 1)
+node2 = Node(300, 400, 2)
+node3 = Node(300, 530, 3)
+node4 = Node(500, 218, 4)
+node5 = Node(550, 400, 5)
 node6 = Node(600, 320, 6)
 node7 = Node(600, 530, 7)
 node8 = Node(900, 530, 8)
