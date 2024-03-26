@@ -1495,10 +1495,19 @@ node28 = Node(710, 60, 28)
 node29 = Node(710, 135, 29)
 node30 = Node(710, 250, 30)
 node31 = Node(710, 320, 31)
+node32 = Node(650, 530, 32)
+node33 = Node(750, 530, 33)
+node34 = Node(830, 530, 34)
+node35 = Node(810, 320, 35)
+node36 = Node(810, 60, 36)
+node37 = Node(890, 320, 37)
+node38 = Node(710, 320, 38)
+node39 = Node(710, 320, 39)
+node40 = Node(710, 320, 40)
 
 
 nodes = pygame.sprite.Group()
-nodes.add(node0,node1,node2,node3,node4,node5,node6,node7,node8,node9,node10,node11,node12,node13,node14,node15,node16,node17,node18,node19,node20,node21,node22,node23,node24,node25,node26,node27,node28,node29,node30,node31)
+nodes.add(node0,node1,node2,node3,node4,node5,node6,node7,node8,node9,node10,node11,node12,node13,node14,node15,node16,node17,node18,node19,node20,node21,node22,node23,node24,node25,node26,node27,node28,node29,node30,node31,node32,node33,node34,node35,node36,node37,node38,node39,node40)
 
 ############################# FUNCTIONS FOR THE GAME##################################
 ############################ GENERAL LAYOUT OF SCREEN ################################
