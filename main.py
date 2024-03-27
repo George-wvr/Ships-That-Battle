@@ -10,11 +10,11 @@ import math
 pygame.init()
 
 #variables and constants
-menu = "game" #so that the start menu loads on start up
+menu = "start" #so that the start menu loads on start up
 previous_menu = "start"
 
-user_name_text = "ADMIN"
-user_age_input = "100"
+user_name_text = ""
+user_age_input = ""
 active_box = None
 invalid_inputs = [None, "\b", "\n", "\t", "\r", "^[", '"', "#"]
 n_message = ""
@@ -129,6 +129,7 @@ screen_alt = (0, 32, 96)
 current_screen_col = screen_default
 
 game_defult = (128, 128, 128)
+game_alt = (0, 32, 96)
 
 txt_default = (0,0,0)
 txt_alt = (255, 255, 255)
@@ -177,11 +178,25 @@ def scheme_change(change):
         current_standard_fnt = fnt_standard_alt
 
 #Changing the current colours when the game starts
-def toggle_colours_gameandmenu():
+def scheme_for_game():
+    global current_screen_col, current_text_col, screen_default, screen_alt, game_defult, game_alt, game_box_col
     if current_screen_col == screen_default:
         current_screen_col = game_defult
-    elif current_screen_col == game_defult:
+        current_text_col = txt_default
+        game_box_col = (175, 171, 171)
+    elif current_screen_col == screen_alt:
+        current_screen_col = game_alt
+        current_text_col = txt_alt
+        game_box_col = game_alt
+
+def scheme_for_menus():
+    global current_screen_col, current_text_col, screen_default, screen_alt, game_defult, game_alt
+    if current_screen_col == game_defult:
         current_screen_col = screen_default
+        current_text_col = txt_default
+    elif current_screen_col == game_alt:
+        current_screen_col = screen_alt
+        current_text_col = txt_alt
 
 
 #Functions to render text
@@ -627,7 +642,6 @@ def validation_page():
                     if button.action == "game":
                         print("Reset")
                         reset_game()
-                        #toggle_colours_gameandmenu()
                 elif button.type == 2:
                     submit = True
 
@@ -868,11 +882,10 @@ def endgame():
             #checks if the button has been clicked on
             if button.clicked() == True:
                 if button.type == 0:
-                   update_score_files()
-                   menu = button.action
-                   if button.action == "game":
+                    update_score_files()
+                    menu = button.action
+                    if button.action == "game":
                         reset_game()
-                        #toggle_colours_gameandmenu()
                 elif button.type == 1:
                     scheme_change(button.action)
 
@@ -1114,8 +1127,8 @@ def run_game():
         time_penalty()
         player_boat.goto(swidth - 75, sheight - 50)
 
-    for node in nodes:
-        node.draw()
+    #for node in nodes:
+        #node.draw()
 
     if cool_down > 0:
         cool_down -= 1
@@ -1898,21 +1911,27 @@ while True:
         music = 3
 
     if menu == "start":
+        scheme_for_menus()
         main_menu()
 
     if menu == "validation":
+        scheme_for_menus()
         validation_page()
 
     if menu == "how_play":
+        scheme_for_menus()
         how_play()
 
     if menu == "scores":
+        scheme_for_menus()
         scores()
 
     if menu == "settings":
+        scheme_for_menus()
         settings()
 
     if menu == "quit":
+        scheme_for_menus()
         quitgame()
 
     if menu == "leave_game":
@@ -1920,15 +1939,19 @@ while True:
         sys.exit()
 
     if menu == "game":
+        scheme_for_game()
         run_game()
 
     if menu == "endgame":
+        scheme_for_menus()
         endgame()
 
     if menu == "pause":
+        scheme_for_menus()
         pause()
 
     if menu == "endround":
+        scheme_for_menus()
         endround()
 
     pygame.display.update()
