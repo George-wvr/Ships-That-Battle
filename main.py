@@ -374,7 +374,8 @@ def name_validate(text):
 
 #Age validation:
 def age_validate(text):
-    passed = 2 #a check to make sure that the string is only converted to an int if it contains no spaces or letters - this is to avoid it crashing
+    passed = 2 #a check to make sure that the string is only converted to an int
+    #            if it contains no spaces or letters - this is to avoid it crashing
     returnmessage = None
     for number in text:
         if number == " ":
@@ -425,37 +426,43 @@ def update_score_text(num_high):
     return write_text
 
 def update_score_files():
-    #Highscore?
+    # checks if its a highscore or not
     written = False
-    filer = open("high score.txt","r")
+    file_r = open("high score.txt","r")
     num = ""
     highscore = False
-    for line in filer:
+    #Loops each character in the file to see if its a number using the existing num list
+    #if it is then its added to the num string
+    for line in file_r:
         #print("line:", line)
         for letter in line:
             #print("Letter", letter)
             if letter in numbers:
                 num += letter
-                #print(num)
-            fileread = True
-        if int(num) < score and written == False:
-            filer2 = open("high score.txt","r")
-            data = filer2.readline()
-            filer2.close()
-            #print("data",data)
-            f = open("high score.txt","w")
-            lineto_write = user_name_text, " - ", str(score)
-            f.writelines(lineto_write)
-            f.close()
-            highscore = True
-            allfile = open("all scores.txt","r")
-            olddata = allfile.read()
-            allfile.close()
-            newdata = data + "\n" + olddata
-            allfile = open("all scores.txt","w")
-            allfile.writelines(newdata)
-            written = True
-            allfile.close()
+                #print(num)    
+    
+    #Checks the intiger value of the num and compares to the players score        
+    if int(num) < score and written == False:
+        filer2 = open("high score.txt","r")
+        data = filer2.readline()
+        filer2.close()
+        #print("data",data)
+        #Writing data into the file
+        f = open("high score.txt","w")
+        lineto_write = user_name_text, " - ", str(score)
+        f.writelines(lineto_write)
+        f.close()
+        #Adding old score to the top of the all scores file
+        #top as it will be the highest score
+        highscore = True
+        allfile = open("all scores.txt","r")
+        olddata = allfile.read()
+        allfile.close()
+        newdata = data + "\n" + olddata
+        allfile = open("all scores.txt","w")
+        allfile.writelines(newdata)
+        written = True
+        allfile.close()
 
 
     #Not a High Score
@@ -849,7 +856,8 @@ def endgame():
     text =current_title_fnt.render("Ships That Battle",True, current_text_col)
     text_rect = text.get_rect(center = (swidth/2, 35))
     displaysurf.blit(text, text_rect)
-    text =current_title_fnt.render("Game Over",True, current_text_col)
+    textto_render = "Game Over "+user_name_text
+    text =current_title_fnt.render(textto_render,True, current_text_col)
     text_rect = text.get_rect(center = (swidth/2, 150))
     displaysurf.blit(text, text_rect)
 
@@ -991,12 +999,13 @@ def run_game():
     #island.draw(displaysurf)
     render_text(displaysurf, current_standard_fnt, current_text_col)
 
-    #Addign the new rects of the players and enimis to the all sprites group so they can be rendered together
+    #Adding the new rects of the players and enemys
+    #to the all sprites group so they can be rendered together
     allsprites.add(player_boat)
     allsprites.add(enemy_boat1, enemy_boat2)
     #Drawing all the sprites in one go
-    for thing in allsprites:
-        thing.draw()
+    for sprite in allsprites:
+        sprite.draw()
         graph = {
     0:{1:75},
     1:{0:75, 2:60},
@@ -1127,8 +1136,8 @@ def run_game():
         time_penalty()
         player_boat.goto(swidth - 75, sheight - 50)
 
-    #for node in nodes:
-        #node.draw()
+    for node in nodes:
+        node.draw()
 
     if cool_down > 0:
         cool_down -= 1
@@ -1360,13 +1369,17 @@ class Eboat(pygame.sprite.Sprite):
         pygame.display.update()
 
     def path(self, currentnode, targetnode, graph):
+        #Dictionarys have to be created to hold
+        #Node that the distance was gained from (previouse node)
         previouse_node = {}
+        #The distance from the start node to that node on the current path
         distances = {}
 
         #sets the distance between each node to infinity
         for i in graph:
             distances[i] = math.inf
-
+           
+        #Sets the distance to the current node to 0
         distances[currentnode] = 0
 
         while graph:
@@ -1374,19 +1387,26 @@ class Eboat(pygame.sprite.Sprite):
             shortest = None
 
             for node in graph:
+                #if nothing is selected as the shortest then the first node is set
                 if shortest == None:
                     shortest = node
+                #if there is a shortest node then that is compared to the next nodes distance
                 elif distances[node] < distances[shortest]:
                     shortest = node
                 #print(shortest)
 
+            #Loops each node connected the shortest node and gets the distance to it
             for connection, dist in graph[shortest].items():
                 #print("Connection",connection,"Distance", dist)
 
+                #Checks if the node is still in the graph (not been popped)
                 if connection in graph:
                     #print("In graph")
-                    if distances[connection] > (dist + distances[shortest]):
+                    #checks if the current registered distance for the node is more than the new distance
+                    if distances[connection] > (dist + distances[shortest]):#
+                        #sets the registered distance to the new distance
                         distances[connection] = (dist + distances[shortest])
+                        #updates where the previouse node comes from
                         previouse_node[connection] = shortest
 
                 #print("distances", distances)
@@ -1396,14 +1416,23 @@ class Eboat(pygame.sprite.Sprite):
             #print("graph",graph)
         #print("Exited loop")
 
+        #Reading the dictionarys to get the list
+        #Starts with the target node
         shortest_path = [targetnode]
+        #starts at the end point to work backwards
         location = targetnode
+        #loops untill the start point is found
         while location != currentnode:
             #print("location",location)
+            #gets the previouse node in the shortest path
             toadd = previouse_node[location]
+            #adds the previous node to the start of the list
             shortest_path.insert(0,toadd)
             location = toadd
+        #flipping path
         shortest_path.reverse()
+        #removing the first item in the list as this is the current node
+        #unless this is the only node then leave it in
         if len(shortest_path) > 1:
             shortest_path.pop(0)
         #print("Shorest path:", shortest_path)    
@@ -1633,6 +1662,7 @@ class Bomb:
                 pygame.mixer.Sound.play(water_splosh)
 
         # If the missile has collided with something it is moved off of the screen so it cant be collided with again
+        #removes missile if its crashed or its run out of life
         if self.crash == True or self.life <= 0:
             if self in player_bombs:
                 player_bombs.remove(self)
